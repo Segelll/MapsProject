@@ -46,6 +46,7 @@
 		ECDF33FF2A53E5E600545CEE /* MapsProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapsProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECDF34032A53E5E600545CEE /* MapsProjectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITests.swift; sourceTree = "<group>"; };
 		ECDF34052A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		ECDF34122A53E6B000545CEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +97,7 @@
 		ECDF33E52A53E5E400545CEE /* MapsProject */ = {
 			isa = PBXGroup;
 			children = (
+				ECDF34122A53E6B000545CEE /* Info.plist */,
 				ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */,
 				ECDF33E82A53E5E400545CEE /* ContentView.swift */,
 				ECDF33EA2A53E5E600545CEE /* Assets.xcassets */,
@@ -429,6 +431,10 @@
 				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MapsProject/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App needs location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "app needs location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs location...";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -458,6 +464,10 @@
 				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MapsProject/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App needs location";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "app needs location";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs location...";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
