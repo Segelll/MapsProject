@@ -16,7 +16,7 @@ struct ContentView: View{
     @State private var searchText = ""
     @State private var Destinationlocation = [MKMapItem]()
     @StateObject private var locationViewer = LocationViewer()
-    
+    @State var markeron = false
     @State var redmode = false
     @State var weather : ResponseBody?
     var weathermanager = WeatherManager()
@@ -25,14 +25,16 @@ struct ContentView: View{
     @State var shownewscreen = false
     var body :some View{
         Map(position: $cameraPosition){
-            
-            if redmode == true{
-                Marker("You", image: "sparkles", coordinate: locationViewer.currentcoordinate )
-                    .tint(.red)
-            }else{
-                Marker("You", image: "location.fill", coordinate: locationViewer.currentcoordinate )
-                    .tint(.blue)
-            }
+            if markeron == true{
+                if redmode == true{
+                    Marker("You", image: "sparkles", coordinate: locationViewer.currentcoordinate )
+                        .tint(.red)
+                }else{
+                    Marker("You", image: "location.fill", coordinate: locationViewer.currentcoordinate )
+                        .tint(.blue)
+                }}else{
+                    
+                }
             ForEach (Destinationlocation ,id: \.self){ item in
                 let placemark=item.placemark
                 Marker(placemark.name ?? "",image:"location.magnifyingglass", coordinate:placemark.coordinate)}
@@ -72,13 +74,22 @@ struct ContentView: View{
                 Button(action:{
                     locationViewer.checklocationservices()
                     locationbuttonpressed = true
+                    markeron.toggle()
                     
                 }, label:{
-                    Image(systemName: "shareplay")
-                        .foregroundColor(.blue)
-                        .frame(width:55,height: 55)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                    if markeron == true {
+                        Image(systemName: "shareplay")
+                            .foregroundColor(.blue)
+                            .frame(width:55,height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)}
+                    else if markeron == false{
+                        Image(systemName: "shareplay.slash")
+                            .foregroundColor(.gray)
+                            .frame(width:55,height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .shadow(radius: 20)
+                    }
                 })
                        Button(action:{
                            if locationbuttonpressed == true{
@@ -87,7 +98,6 @@ struct ContentView: View{
                                Task{
                                do{
                                    weather = try await weathermanager.getWeather(loc: locationViewer.currentcoordinate)
-                                   print(weather)
                                }
                                catch{
                                    print("error occured")
@@ -102,7 +112,9 @@ struct ContentView: View{
                             .shadow(radius: 20)
                        })
                        .sheet(isPresented: $shownewscreen,onDismiss:{ redmode = false} ){
-                           newscreen()
+                           if weather != nil{
+                               newscreen(weather: weather!)
+                           }
                        }
                       
             }
@@ -112,12 +124,39 @@ struct ContentView: View{
             Task { await searchplace()}
         }
         
+        
     }
 }
 struct newscreen:View{
+    var weather:ResponseBody
     var body:some View{
-        Text("null")
+        HStack(alignment:.top){
+            VStack{
+                Text(weather.name)
+                    .bold()
+                    .font(.title)
+                    .fontWidth(.expanded)
+                    .textCase(.uppercase)
+                Text("\(Date().formatted(.dateTime.day().month().hour().minute()))")
+                    .fontWidth(.expanded)
+                    .textCase(.uppercase)
+                    .italic()
+            }
             
+            
+            Spacer()
+            VStack{
+                
+                
+                Image(systemName: "sparkles")
+                    .resizable()
+                Text(weather.weather[0].description)
+            }}
+            
+        
+            
+
+       Text("\(weather.main.feelsLike.rounded()) Degrees celcius")
     }
 }
 
