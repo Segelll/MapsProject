@@ -15,7 +15,7 @@ struct ContentView: View{
     @State var mapselection: MKMapItem?
     @State private var searchText = ""
     @State private var Destinationlocation = [MKMapItem]()
-    @StateObject private var locationViewer = LocationViewer()
+    @StateObject var locationViewer = LocationViewer()
     @State var markeron = false
     @State var redmode = false
     @State var weather : ResponseBody?
@@ -28,17 +28,25 @@ struct ContentView: View{
     @State var shownewscreen = false
     @State var searchmode = true
     @State var tapped = false
-    @State private var tappedCoordinate: CLLocationCoordinate2D?
     @State var centerlocation :CLLocationCoordinate2D?
     @State var centeronend :CLLocationCoordinate2D?
     @State var elevation : ResponseBody2?
+    @State var poly = 0
+    @State var polymarkers : [CLLocationCoordinate2D] = []
     var elevationmanager = ElevationManager()
+    @ObservedObject var polygonviewer = polygonViewer()
+    @State var a = ""
+    @State var distance : [Double] = []
+    @State var midpoint : [CLLocationCoordinate2D] = []
+    @State var polyon : Bool = false
+    @State var firstD : Double = 0.0
+    @State var firstC : CLLocationCoordinate2D?
     var body :some View{
         
         
     
         Map(position: $cameraPosition, selection:$mapselection){
-         
+            
             if markeron == true{
                 if redmode == true{
                     Marker("You", image: "thermometer.sun.fill", coordinate: locationViewer.currentcoordinate )
@@ -71,13 +79,59 @@ struct ContentView: View{
                     Marker(weather?.name ?? "",image:"thermometer.sun.fill", coordinate:centeronend ?? locationViewer.currentcoordinate)
                         .tint(.indigo)
                     
+                }
+               
+            }
+           
+            if poly > 0 {
+                ForEach(Range(0...poly-1)){ i in
                     
+                    if i > 0{
+                       let stringholder = "\(String(format: "%.3f", distance[i-1]))m"
+                        Annotation(stringholder, coordinate:midpoint[i-1]){
+                            Image(systemName: "arrow.triangle.merge")
+                        }
+                    }
                         
+                    
+                    Annotation("",coordinate:polymarkers[i]){
+                        Circle()
+                            .frame(width:8,height:8)
+                            .foregroundStyle(.black)
+                    }
+                }
+                if polyon == true{
+                    Annotation(String(firstD), coordinate:firstC ?? locationViewer.currentcoordinate){
+                        Image(systemName: "arrow.triangle.merge")
+                    }
+                }
+                Annotation("",coordinate:polymarkers[0]){
+                    Circle()
+                        .frame(width:8,height:8)
+                        .foregroundStyle(.black)
                 }
             }
-
+            if poly > 1 {
+                Annotation("", coordinate:polymarkers[1]){
+                    Circle()
+                        .frame(width:8,height:8)
+                        .foregroundStyle(.black)
+                }
+            }
+            if poly > (Int(a) ?? 3)-1 {
+              
+                MapPolygon(coordinates: polygonviewer.polycoordinates)
+                    .stroke(.black, lineWidth: 2)
+                
+            }
+           
+          
+        
+            
          
         }
+        
+        
         
         
         
@@ -182,6 +236,7 @@ struct ContentView: View{
                 Spacer()
                 Button(action:{
                     if searchmode == false{
+                       
                         tapped = true
                         
                         Task{
@@ -197,7 +252,7 @@ struct ContentView: View{
                             }
                             
                         }
-                      
+                        
                     }
                 }, label:{
                     if searchmode == false{
@@ -424,20 +479,21 @@ struct ContentView: View{
                     
                 }, label: {
                     if satellitebutton == true{
-                        Image(systemName: "globe.americas.fill")
-                            .foregroundColor(.green)
+                        Image(systemName: "square.2.layers.3d.bottom.filled")
+                            .foregroundColor(.black)
                             .frame(width:55,height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
                     }else{
-                        Image(systemName: "map.fill")
-                            .foregroundColor(.gray)
+                        Image(systemName: "square.2.layers.3d.top.filled")
+                            .foregroundColor(.black)
                             .frame(width:55,height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
                     }
                     
                 })
+             
             }
         
        
@@ -451,32 +507,112 @@ struct ContentView: View{
             }
         
         .overlay(alignment:.center){
-            if satellitebutton == true{
-            Image(systemName: "plus.viewfinder")
-            
-                .foregroundColor(.red)
-            }else{
-                Image(systemName: "plus.viewfinder")
-            }
+        
+                if satellitebutton == true{
+                    Image(systemName: "plus.viewfinder")
+                    
+                        .foregroundColor(.red)
+                }else{
+                    Image(systemName: "plus.viewfinder")
+                }
+          
+               
+
+         
                 
         }
         .overlay(alignment:.bottom){
-            Button(action:{
+            HStack{
+                Button(action:{
+                    
+                    
+                },label:{
+                    let txttemplat = String(format: "%.3f",centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude)
+                    let txttemplong = String(format: "%.3f",centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude)
+                    let txttempalt = String(format: "%.3f",elevation?.results[0].elevation ?? 0,0)
+                    
+                         
+                    
+                    Text("\(txttemplat)° , \(txttemplong)° / \(txttempalt)m")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
+                        .frame(width:300, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                })
+                .offset(y:-10)
+
+              
                 
-            },label:{
-                let txttemplat = String(format: "%.3f",centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude)
-                let txttemplong = String(format: "%.3f",centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude)
-            let txttempalt = String(format: "%.3f",elevation?.results[0].elevation ?? 0,0)
-                Text("\(txttemplat)° , \(txttemplong)° / \(txttempalt)m")
-                    .fontWidth(.expanded)
-                    .font(.footnote)
-                    .foregroundStyle(.black)
-                
-                    .frame(width:300, height: 55)
+                TextField(String(poly),text: $a)
+                    .font(.subheadline)
+                 
                     .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                    .shadow(radius: 20)
-            })
-            .offset(y:-10)
+                    
+                    .shadow(radius:20)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 55, height: 85)
+                    .offset(y:-10)
+                
+               
+                Button(action:{
+                    polymarkers.append(centerlocation!)
+                    polygonviewer.createpoly(coordinate1:centerlocation!)
+                   
+                    poly += 1
+              
+                    if poly > 1{
+                        distance.append(distancecalc(coord1:polymarkers[poly-1],coord2:polymarkers[poly-2])*1000)
+                        let latmid = (polymarkers[poly-1].latitude + polymarkers[poly-2].latitude)/2
+                        let longmid = (polymarkers[poly-1].longitude + polymarkers[poly-2].longitude)/2
+                        midpoint.append(CLLocationCoordinate2D(latitude:latmid, longitude: longmid))
+                    }
+                    if poly > (Int(a) ?? 3)-1 {
+                        polyon = true
+                        firstD = distancecalc(coord1:polymarkers[poly-1],coord2:polymarkers[0])*1000
+                        let latmid = (polymarkers[poly-1].latitude + polymarkers[0].latitude)/2
+                        let longmid = (polymarkers[poly-1].longitude + polymarkers[0].longitude)/2
+                        firstC = CLLocationCoordinate2D(latitude:latmid, longitude: longmid)
+                    }
+                    a = "99"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        a = ""
+                    }
+                  
+                  
+                },label:{
+                    Image(systemName: "scope")
+                    
+                        .foregroundStyle(.green)
+                    
+                        .frame(width:100, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                })
+                .offset(y:-10)
+                Button(action:{
+                    poly = 0
+                    polygonviewer.clearpoly()
+                    polymarkers = []
+                    midpoint = []
+                    distance = []
+                    polyon = false
+                    a = ""
+                }, label:{
+                    Image(systemName: "trash")
+                    
+                        .foregroundStyle(.red)
+                    
+                        .frame(width:55, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                })
+                .offset(y:-10)
+                
+            }
+                
         }
             
                
@@ -491,10 +627,8 @@ struct ContentView: View{
         }
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
-            Task{
-                elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude))
-            }
-            
+
+           
             
         })
         .onMapCameraChange(frequency: .onEnd, { newcamera in
@@ -516,12 +650,17 @@ struct ContentView: View{
                     }
                     
                 }
+               
+                
             
 
             }
+         Task{
+                elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centeronend?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centeronend?.longitude ?? locationViewer.currentcoordinate.longitude))
+            }
         })
        
-        
+    
         .onChange(of:mapselection,{oldValue, newValue in
             let placemark = mapselection?.placemark
             redmode = false
@@ -550,6 +689,7 @@ struct ContentView: View{
     }
         
 }
+
 
 struct newscreen:View{
     var weather:ResponseBody
@@ -596,7 +736,20 @@ struct newscreen:View{
         
 }
 
-
+class polygonViewer: ObservableObject{
+    @Published var polycoordinates : [CLLocationCoordinate2D] = [ ]
+ 
+    
+    func createpoly(coordinate1:CLLocationCoordinate2D){
+        polycoordinates.append(coordinate1)
+        
+           
+    }
+                            func clearpoly(){
+                                self.polycoordinates = []
+                            }
+    
+}
 class LocationViewer: NSObject, ObservableObject,CLLocationManagerDelegate{
     var latitude: Double = 0.0
     var longitude: Double = 0.0
@@ -665,9 +818,7 @@ class WeatherManager{
 }
 class ElevationManager{
     func getElevation(loc:CLLocationCoordinate2D)  async throws-> ResponseBody2{
-        
-        let apiKey = "AIzaSyBE26NhHWb4EPni6vA7qO0jgGvGbeMy1ZM"
-        let urlString = "https://maps.googleapis.com/maps/api/elevation/json?locations=\(loc.latitude)%2C\(loc.longitude)&key=\(apiKey)"
+        let urlString = "https://api.open-elevation.com/api/v1/lookup?locations=\(loc.latitude),\(loc.longitude)"
         guard let url = URL(string: urlString) else {
             fatalError("Cannot get elevation data")
         }
@@ -680,19 +831,15 @@ class ElevationManager{
 }
 struct ResponseBody2: Decodable {
     let results: [Result]
-    let status: String
+    
     
 }
     struct Result: Decodable {
+        let latitude: Double
+        let longitude: Double
         let elevation: Double
-        let location: Location
-        let resolution: Double
         
     }
-        struct Location: Decodable {
-            let lat: Double
-            let lng: Double
-        }
     
 
 
@@ -753,6 +900,27 @@ extension ContentView{
             cameraPosition = .region (MKCoordinateRegion(center: self.Destinationlocation[0].placemark.coordinate,latitudinalMeters: 12500,longitudinalMeters: 12500))
         }
         
+    }
+    func distancecalc(coord1:CLLocationCoordinate2D,coord2:CLLocationCoordinate2D)->Double{
+       
+
+        let R = 6371.00 /*Earth's radius*/
+
+        // Convert degrees to radians
+        let phi1 = coord1.latitude * Double.pi / 180
+        let lambda1 = coord1.longitude * Double.pi / 180
+
+        let phi2 = coord2.latitude * Double.pi / 180
+        let lambda2 = coord2.longitude * Double.pi / 180
+
+        // Calculate the differences
+        let deltaPhi = phi2 - phi1
+        let deltaLambda = lambda2 - lambda1
+
+        let a = pow(sin(deltaPhi / 2), 2) + cos(phi1) * cos(phi2) * pow(sin(deltaLambda / 2), 2)
+        let c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        let d = R * c
+        return d
     }
 
 
