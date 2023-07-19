@@ -116,7 +116,7 @@ struct LoginView: View {
                     .fontWidth(.expanded)
                     .font(.subheadline)
                     .foregroundStyle(.indigo)
-                
+                    .bold()
                     .shadow(radius: 20)
             })
             
@@ -129,15 +129,15 @@ struct LoginView: View {
                 .fontWidth(.expanded)
                 .font(.callout)
                 .foregroundStyle(.black)
-            
+                .bold()
                 .frame(width:200, height: 55)
                
-                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white).shadow(radius: 5))
                 .padding(.horizontal,5)
-                .background(RoundedRectangle(cornerRadius: 18).fill(.red.opacity(0.4)))
+                .background(RoundedRectangle(cornerRadius: 18).fill(.red.opacity(0.4)).shadow(radius: 5))
                 .padding(.horizontal,5)
-                .background(RoundedRectangle(cornerRadius: 20).fill(.red.opacity(0.2)))
-                .shadow(radius: 5)
+                .background(RoundedRectangle(cornerRadius: 20).fill(.red.opacity(0.2)).shadow(radius: 5))
+                
                 
         })
     }
