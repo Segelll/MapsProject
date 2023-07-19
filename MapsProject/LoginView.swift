@@ -22,6 +22,31 @@ struct LoginView: View {
             return passwordRegex.evaluate(with: password)
         }
     var body: some View {
+        HStack{
+        
+        
+        Image(systemName: "person.badge.key.fill")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 110, height: 100)
+            .foregroundStyle(.red,.black)
+            .offset(x:12)
+            .padding(-10)
+        
+        Image(systemName: "ellipsis")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 80, height: 80)
+            .foregroundStyle(.black)
+            .padding(.horizontal,20)
+            
+        
+        Image(systemName: "map.fill")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 110, height: 100)
+            .foregroundStyle(.black)
+    }
         Text("MapKit")
             .fontWidth(.expanded)
             .bold()
