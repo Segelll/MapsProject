@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */ = {isa = PBXBuildFile; fileRef = EC52966F2A67D993000E03EB /* Authorization(View).swift */; };
+		EC5296722A67DC35000E03EB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5296712A67DC35000E03EB /* String.swift */; };
 		ECDF33E72A53E5E400545CEE /* MapsProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */; };
 		ECDF33E92A53E5E400545CEE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF33E82A53E5E400545CEE /* ContentView.swift */; };
 		ECDF33EB2A53E5E600545CEE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECDF33EA2A53E5E600545CEE /* Assets.xcassets */; };
@@ -15,6 +17,11 @@
 		ECDF33FA2A53E5E600545CEE /* MapsProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF33F92A53E5E600545CEE /* MapsProjectTests.swift */; };
 		ECDF34042A53E5E600545CEE /* MapsProjectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF34032A53E5E600545CEE /* MapsProjectUITests.swift */; };
 		ECDF34062A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF34052A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift */; };
+		ECEA74F52A668028000CF4E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */; };
+		ECEA74F82A66819F000CF4E4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECEA74F72A66819F000CF4E4 /* FirebaseAuth */; };
+		ECEA74FA2A66819F000CF4E4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */; };
+		ECEA74FC2A66837A000CF4E4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA74FB2A66837A000CF4E4 /* LoginView.swift */; };
+		ECEA74FE2A66839F000CF4E4 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EC52966F2A67D993000E03EB /* Authorization(View).swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Authorization(View).swift"; sourceTree = "<group>"; };
+		EC5296712A67DC35000E03EB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		ECDF33E32A53E5E400545CEE /* MapsProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapsProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectApp.swift; sourceTree = "<group>"; };
 		ECDF33E82A53E5E400545CEE /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -47,6 +56,9 @@
 		ECDF34032A53E5E600545CEE /* MapsProjectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITests.swift; sourceTree = "<group>"; };
 		ECDF34052A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		ECDF34122A53E6B000545CEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ECEA74FB2A66837A000CF4E4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +66,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECEA74F82A66819F000CF4E4 /* FirebaseAuth in Frameworks */,
+				ECEA74FA2A66819F000CF4E4 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,8 +111,13 @@
 		ECDF33E52A53E5E400545CEE /* MapsProject */ = {
 			isa = PBXGroup;
 			children = (
+				ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */,
+				EC5296712A67DC35000E03EB /* String.swift */,
 				ECDF34122A53E6B000545CEE /* Info.plist */,
 				ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */,
+				EC52966F2A67D993000E03EB /* Authorization(View).swift */,
+				ECEA74FB2A66837A000CF4E4 /* LoginView.swift */,
+				ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */,
 				ECDF33E82A53E5E400545CEE /* ContentView.swift */,
 				ECDF33EA2A53E5E600545CEE /* Assets.xcassets */,
 				ECDF33EF2A53E5E600545CEE /* Item.swift */,
@@ -148,6 +167,10 @@
 			dependencies = (
 			);
 			name = MapsProject;
+			packageProductDependencies = (
+				ECEA74F72A66819F000CF4E4 /* FirebaseAuth */,
+				ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */,
+			);
 			productName = MapsProject;
 			productReference = ECDF33E32A53E5E400545CEE /* MapsProject.app */;
 			productType = "com.apple.product-type.application";
@@ -220,6 +243,9 @@
 				Base,
 			);
 			mainGroup = ECDF33DA2A53E5E400545CEE;
+			packageReferences = (
+				ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = ECDF33E42A53E5E400545CEE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -238,6 +264,7 @@
 			files = (
 				ECDF33EE2A53E5E600545CEE /* Preview Assets.xcassets in Resources */,
 				ECDF33EB2A53E5E600545CEE /* Assets.xcassets in Resources */,
+				ECEA74F52A668028000CF4E4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,7 +290,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECDF33E92A53E5E400545CEE /* ContentView.swift in Sources */,
+				ECEA74FE2A66839F000CF4E4 /* RegisterView.swift in Sources */,
 				ECDF33F02A53E5E600545CEE /* Item.swift in Sources */,
+				EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */,
+				EC5296722A67DC35000E03EB /* String.swift in Sources */,
+				ECEA74FC2A66837A000CF4E4 /* LoginView.swift in Sources */,
 				ECDF33E72A53E5E400545CEE /* MapsProjectApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -604,6 +635,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ECEA74F72A66819F000CF4E4 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ECDF33DB2A53E5E400545CEE /* Project object */;
 }

@@ -13,7 +13,7 @@ struct MapsProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Authorization_View_()
         }
         .modelContainer(for: Item.self)
     }
