@@ -9,14 +9,19 @@ import SwiftUI
 
 struct Authorization_View_: View {
     @State private var currentViewShowing: String = "login"
+    @AppStorage("uid") var userid: String = ""
     var body: some View {
-        if(currentViewShowing == "login") {
-                   LoginView(currentShowingView: $currentViewShowing)
-                     
-               } else {
-                   RegisterView(currentShowingView: $currentViewShowing)
-                       
-               }
+        if userid == ""{
+            if(currentViewShowing == "login") {
+                LoginView(currentShowingView: $currentViewShowing)
+                
+            } else {
+                RegisterView(currentShowingView: $currentViewShowing)
+                
+            }
+        }else{
+            ContentView()
+        }
     }
 }
 

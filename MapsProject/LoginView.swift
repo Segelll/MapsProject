@@ -8,9 +8,10 @@
 import SwiftUI
 import FirebaseAuth
 struct LoginView: View {
+    @AppStorage("uid") var userid: String = ""
     @State var email = ""
     @State var password = ""
-   
+    @State var errormessage : Bool = false
     @Binding var currentShowingView: String
     private func isValidPassword(_ password: String) -> Bool {
             // minimum 6 characters long
@@ -123,7 +124,19 @@ struct LoginView: View {
         }
         .padding(.bottom,10)
         Button(action:{
-            
+            Auth.auth().signIn(withEmail: email, password: password){ authResult, error in
+                if let error = error{
+                    errormessage.toggle()
+                    return
+                }
+                if let authResult = authResult{
+                    withAnimation{
+                        userid = authResult.user.uid
+                    }
+                    print(userid)
+                    
+                }
+            }
         },label:{
             Text("Login")
                 .fontWidth(.expanded)
@@ -140,7 +153,26 @@ struct LoginView: View {
                 
                 
         })
+        .popover(isPresented: $errormessage){
+            ErrorView()
+        }
     }
+
+}
+struct ErrorView:View{
+    var body : some View{
+        ZStack{
+            Text("Invalid E-mail or password")
+                .fontWidth(.expanded)
+                .font(.callout)
+                .foregroundStyle(.black)
+                .bold()
+               
+        }
+        .frame(width:300,height: 60)
+    }
+        
+    
 }
 
 

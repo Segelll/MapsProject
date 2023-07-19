@@ -9,8 +9,10 @@ import SwiftUI
 import FirebaseAuth
 struct RegisterView: View {
     @Binding var currentShowingView: String
+    @AppStorage("uid") var userid: String = ""
     @State var email = ""
     @State var password = ""
+    @State var errormessage :Bool = false
     private func isValidPassword(_ password: String) -> Bool {
             // minimum 6 characters long
             // 1 uppercase character
@@ -120,6 +122,17 @@ struct RegisterView: View {
         }
         .padding(.bottom,10)
         Button(action:{
+            Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
+                if let error = error {
+                    errormessage.toggle()
+                }
+                if let authResult = authResult{
+                    withAnimation{
+                        userid = authResult.user.uid
+                    }
+                }
+                print(userid)
+            }
             
         },label:{
             Text("Register")
@@ -136,6 +149,23 @@ struct RegisterView: View {
                 .background(RoundedRectangle(cornerRadius: 20).fill(.indigo.opacity(0.2)).shadow(radius: 5))
                 
         })
+        .popover(isPresented: $errormessage,attachmentAnchor:.rect(.bounds),arrowEdge:.top){
+            ErrorView2()
+        }
     }
+}
+struct ErrorView2 : View{
+    var body : some View{
+        ZStack{
+            Text("E-mail address must be valid and password must contain at least 6 characters")
+                .fontWidth(.expanded)
+                .font(.callout)
+                .foregroundStyle(.black)
+                .bold()
+              
+        }
+        .frame(width:450,height: 60)
+    }
+    
 }
 

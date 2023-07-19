@@ -8,9 +8,10 @@
 import SwiftUI
 import SwiftData
 import MapKit
-
+import FirebaseAuth
 
 struct ContentView: View{
+    @AppStorage("uid") var userid: String = ""
     @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
     @State var mapselection: MKMapItem?
     @State private var searchText = ""
@@ -686,6 +687,8 @@ struct ContentView: View{
         }
         .overlay(alignment:.bottom){
             HStack{
+                Spacer()
+                
                 Button(action:{
                     
                     
@@ -978,7 +981,34 @@ struct ContentView: View{
                    SelectionScreen(selectkm: $selectkm)
                         
                 }
+                Spacer()
+                Button(action:{
+                    let firebaseAuth = Auth.auth()
+                                    do {
+                                        try firebaseAuth.signOut()
+                                        withAnimation {
+                                            userid = ""
+                                        }
+                                    } catch let signOutError as NSError {
+                                        print("Error signing out: %@", signOutError)
+                                    }
+                }, label:{
+                    Image(systemName: "person.fill.badge.minus")
+                        
+                        .foregroundStyle(.red)
+                        
+                    
+                        .frame(width:20, height: 20)
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.red))
+                        .shadow(radius: 20)
+                        .offset(x:-28,y:-10)
+                        
+                })
             }
+            .offset(x:20)
                 
         }
             

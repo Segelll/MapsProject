@@ -7,10 +7,13 @@
 
 import SwiftUI
 import SwiftData
+import FirebaseCore
 
 @main
 struct MapsProjectApp: App {
-
+    init() {
+        FirebaseApp.configure()
+    }
     var body: some Scene {
         WindowGroup {
             Authorization_View_()
