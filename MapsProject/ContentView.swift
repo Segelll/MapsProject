@@ -33,7 +33,6 @@ struct ContentView: View{
     @State var centeronend :CLLocationCoordinate2D?
     @State var elevation : ResponseBody2?
     @State var poly = 0
-    @State var polymarkers : [CLLocationCoordinate2D] = []
     var elevationmanager = ElevationManager()
     @ObservedObject var polygonviewer = polygonViewer()
     @State var a = ""
@@ -66,7 +65,7 @@ struct ContentView: View{
                 }}else{
                     
                 }
-            
+            if searchmode == true{
                 ForEach (Destinationlocation ,id: \.self){ item in
                     let placemark=item.placemark
                     if placeredmode == false{
@@ -81,6 +80,7 @@ struct ContentView: View{
                     
                     
                 }
+            }
             if searchmode == false{
                 
                 
@@ -101,90 +101,56 @@ struct ContentView: View{
                             let stringholder = "\(String(format: "%.3f", distance[i-1]))m"
                             Annotation(stringholder, coordinate:midpoint[i-1]){
                                 
-                                Image(systemName: "arrow.triangle.merge")
+                               
                             }
                         }
                             else {
                                 let stringholder = "\(String(format: "%.3f", distance[i-1]/1000))km"
                                      Annotation(stringholder, coordinate:midpoint[i-1]){
                                          
-                                         Image(systemName: "arrow.triangle.merge")
+                                        
                             }
                         }
                     }
                  
                  
-                    Annotation("",coordinate:polymarkers[i]){
-                        
+                    Annotation("",coordinate:polygonviewer.polycoordinates[i]){
+                        Spacer()
                         if i == 0{
-                            if satellitebutton == false{
+                          
                                 Circle()
                                 .frame(width:12,height:12)
-                                .foregroundStyle(.green)
-                                
-                            }else{
-                                Circle()
-                                .frame(width:12,height:12)
-                                .foregroundStyle(.green)
-                               
-                            }
+                                .foregroundStyle(.black)
+                                .offset(y:3)
+                         
                         }
-                        else if i == poly-1 && i > 0{
-                            ZStack{
+                        else if i == poly-1{
+                            
                                 Circle()
                                     .frame(width:15,height:15)
-                                    .foregroundStyle(.green)
-                            
+                                    .foregroundStyle(.gray)
+                                    .offset(y:3)
                                 
-                                if satellitebutton == false{
-                                    Circle()
-                                    .frame(width:10,height:10)
-                                    .foregroundStyle(.black)
-                                    
-                                }else{
-                                    Circle()
-                                    .frame(width:10,height:10)
-                                    .foregroundStyle(.white)
-                                    
-                                }
-                            }
+                                
+                            
                         }
                    
-                        else{
-                            if satellitebutton == false{
-                                Circle()
-                                    .frame(width:8,height:8)
-                                    .foregroundStyle(.black)
-                                
-                            }else{
-                                Circle()
-                                    .frame(width:8,height:8)
-                                    .foregroundStyle(.white)
-                               
-                                
-                            }
-                        }
+                     
                         if angle.count > 0 {
                             if polylinemode == false{
-                                if i != poly-1{
-                                    
-                                    Text("\(String(format: "%.3f",angle[i]))°")
+                          
+                                    Text("\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°")
                                         .fontWidth(.expanded)
                                         .font(.footnote)
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(.gray)
                                         .bold()
                                         .shadow(radius: 20)
-                                }
-                                if i == poly-1{
-                                    Text("\(String(format: "%.3f",firstA))°")
-                                        .fontWidth(.expanded)
-                                        .font(.footnote)
-                                        .foregroundStyle(.red)
-                                        .bold()
-                                        .shadow(radius: 20)
-                                }
+                                        .offset(y: 10)
+                                
+                               
                             }
                         }
+                        
                     }
                 }
                 
@@ -195,31 +161,21 @@ struct ContentView: View{
                             let stringholder = "\(String(format: "%.3f", firstD))m"
                             Annotation(String(stringholder), coordinate:firstC ?? locationViewer.currentcoordinate){
                                 
-                                Image(systemName: "arrow.triangle.merge")
                             }
                         }
                         else{
                             let stringholder = "\(String(format: "%.3f", firstD/1000))km"
                             Annotation(String(stringholder), coordinate:firstC ?? locationViewer.currentcoordinate){
                                 
-                                Image(systemName: "arrow.triangle.merge")
+                           
                             }
                         }
                     }
                     
                 }
-                Annotation("",coordinate:polymarkers[0]){
-                    Circle()
-                        .frame(width:8,height:8)
-                        .foregroundStyle(.black)
-                }
-            }
-            if poly > 1 {
-                Annotation("", coordinate:polymarkers[1]){
-                    Circle()
-                        .frame(width:8,height:8)
-                        .foregroundStyle(.black)
-                }
+              
+            
+           
                 if polylinemode == true{
                     if poly > (Int(a) ?? 2)-1 {
                         MapPolyline(MKPolyline(coordinates: polygonviewer.polycoordinates, count: poly))
@@ -229,20 +185,13 @@ struct ContentView: View{
             }
             if poly > (Int(a) ?? 3)-1 {
               
-                if satellitebutton == false{
                     if polylinemode == false{
                         MapPolygon(coordinates: polygonviewer.polycoordinates)
                             .stroke(.black, lineWidth: 2)
                             .foregroundStyle(.black.opacity(0.2))
                     }
                         
-                }else{
-                    if polylinemode == false{
-                        MapPolygon(coordinates: polygonviewer.polycoordinates)
-                            .stroke(.white, lineWidth: 2)
-                            .foregroundStyle(.white.opacity(0.2))
-                    }
-                }
+                
             }
             
  
@@ -266,10 +215,11 @@ struct ContentView: View{
                 
                 Button(action:{
                     locationViewer.checklocationservices()
-                    locationbuttonpressed = true
-                    markeron.toggle()
-                    
-                    
+                    withAnimation{
+                        locationbuttonpressed = true
+                        markeron.toggle()
+                        
+                    }
                     
                     
                     
@@ -363,38 +313,7 @@ struct ContentView: View{
                     
                 }
                 Spacer()
-                Button(action:{
-                    if searchmode == false{
-                       
-                        tapped = true
-                        
-                        Task{
-                            do{
-                                if mapselection == nil{
-                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
-                                    weatherfound = true
-                                }
-                                
-                            }
-                            catch{
-                                print("error occured")
-                            }
-                            
-                        }
-                        
-                    }
-                }, label:{
-                    if searchmode == false{
-                        Image(systemName: "hand.tap.fill")
-                        
-                            .foregroundStyle(.indigo)
-                        
-                            .frame(width:55, height: 55)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                            .shadow(radius: 20)
-                    }
-                })
-                
+             
                 Button(action:{
                     
                     Task{
@@ -578,10 +497,11 @@ struct ContentView: View{
                     
                 }
                
-                
+             
                 Button(action:{
-                    searchmode.toggle()
-                    
+                    withAnimation{
+                        searchmode.toggle()
+                    }
                     if tapped == true{
                         tapped = false
                         Task{
@@ -601,9 +521,29 @@ struct ContentView: View{
                             
                         }
                     }
+                    if searchmode == false{
+                       
+                        tapped = true
+                        
+                        Task{
+                            do{
+                                if mapselection == nil{
+                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                    weatherfound = true
+                                }
+                                
+                            }
+                            catch{
+                                print("error occured")
+                            }
+                            
+                        }
+                        
+                    }
                     
                 }, label:{
                     if searchmode == true{
+                      
                         Text("SearchCast")
                             .fontWidth(.expanded)
                             .font(.footnote)
@@ -614,7 +554,8 @@ struct ContentView: View{
                         
                     }
                     else{
-                        Text("TapCast")
+                      
+                        Text("CenterCast")
                             .fontWidth(.expanded)
                             .font(.footnote)
                             .foregroundStyle(.indigo)
@@ -712,65 +653,77 @@ struct ContentView: View{
                
 
               
-                
-                TextField(String(poly),text: $a)
-                    .font(.subheadline)
-                 
-                    .font(.subheadline)
-                    .padding(10)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                    .padding(1)
-                    .shadow(radius:20)
-                    .textFieldStyle(.roundedBorder)
-                    .frame(width: 50, height: 100)
-                    .offset(y:-10)
                 Button(action:{
-                    polymarkers.append(centerlocation!)
-                    polygonviewer.createpoly(coordinate1:centerlocation!)
+                    polylinemode.toggle()
+                },label:{
+                    if polylinemode == false{
+                        Image(systemName: "point.3.filled.connected.trianglepath.dotted")
+                        
+                            .foregroundStyle(.black,.green)
+                        
+                            .frame(width:55, height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                    }
+                    else{
+                        Image(systemName: "point.bottomleft.filled.forward.to.point.topright.scurvepath")
+                        
+                            .foregroundStyle(.black,.green)
+                        
+                            .frame(width:55, height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                    }
+                })
+                .offset(y:-10)
+                
+                Button(action:{
                    
-                    poly += 1
-              
-                    if poly > 1{
-                        distance.append(distancecalc(coord1:polymarkers[poly-1],coord2:polymarkers[poly-2])*1000)
+                    polygonviewer.createpoly(coordinate1:centerlocation!)
+                    withAnimation{
+                        poly += 1
                         
-                        let latmid = (polymarkers[poly-1].latitude + polymarkers[poly-2].latitude)/2
-                        let longmid = (polymarkers[poly-1].longitude + polymarkers[poly-2].longitude)/2
-                        midpoint.append(CLLocationCoordinate2D(latitude:latmid, longitude: longmid))
-                    }
-                    if poly > 2{
-                        total -= firstD
-                    }
-                    if poly > (Int(a) ?? 3)-1 {
-                        polyon = true
-                  //  areaof = calculatePolygonArea(coordinates: polymarkers)
-                    
-                        firstD = distancecalc(coord1:polymarkers[poly-1],coord2:polymarkers[0])*1000
-                        total += firstD
-                        let latmid = (polymarkers[poly-1].latitude + polymarkers[0].latitude)/2
-                        let longmid = (polymarkers[poly-1].longitude + polymarkers[0].longitude)/2
-                        firstC = CLLocationCoordinate2D(latitude:latmid, longitude: longmid)
-                    }
-                    a = "99"
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-                        a = ""
-                    }
-                    if distance.count > 1 {
-                       
-                    
-                            let firstThird = distancecalc(coord1: polymarkers[1], coord2: polymarkers[poly-1])*1000
+                        if poly > 1{
+                            distance.append(distancecalc(coord1:polygonviewer.polycoordinates[poly-1],coord2:polygonviewer.polycoordinates[poly-2])*1000)
+                            
+                            let latmid = (polygonviewer.polycoordinates[poly-1].latitude + polygonviewer.polycoordinates[poly-2].latitude)/2
+                            let longmid = (polygonviewer.polycoordinates[poly-1].longitude + polygonviewer.polycoordinates[poly-2].longitude)/2
+                            midpoint.append(CLLocationCoordinate2D(latitude:latmid, longitude: longmid))
+                        }
+                        if poly > 2{
+                            total -= firstD
+                        }
+                        if poly > (Int(a) ?? 3)-1 {
+                            polyon = true
+                            
+                            
+                            firstD = distancecalc(coord1:polygonviewer.polycoordinates[poly-1],coord2:polygonviewer.polycoordinates[0])*1000
+                            total += firstD
+                            let latmid = (polygonviewer.polycoordinates[poly-1].latitude + polygonviewer.polycoordinates[0].latitude)/2
+                            let longmid = (polygonviewer.polycoordinates[poly-1].longitude + polygonviewer.polycoordinates[0].longitude)/2
+                            firstC = CLLocationCoordinate2D(latitude:latmid, longitude: longmid)
+                        }
+                        a = "99"
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+                            a = ""
+                        }
+                        if distance.count > 1 {
+                            
+                            
+                            let firstThird = distancecalc(coord1: polygonviewer.polycoordinates[1], coord2: polygonviewer.polycoordinates[poly-1])*1000
                             angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird)!
-                            let third = distancecalc(coord1: polymarkers[poly-1], coord2: polymarkers[poly-3])*1000
+                            let third = distancecalc(coord1: polygonviewer.polycoordinates[poly-1], coord2: polygonviewer.polycoordinates[poly-3])*1000
                             angle.append(cosineTheoremForAngle(a:distance[poly-2] , b: distance[poly-3], c:third )!)
+                            
+                            let firstendthird = distancecalc(coord1: polygonviewer.polycoordinates[0], coord2: polygonviewer.polycoordinates[poly-2])*1000
+                            firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
+                        }
+                        if poly > 1{
+                            total += distance[poly-2]
+                        }
+                        regionarea = regionArea(locations: polygonviewer.polycoordinates)
                         
-                        let firstendthird = distancecalc(coord1: polymarkers[0], coord2: polymarkers[poly-2])*1000
-                        firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
                     }
-                    if poly > 1{
-                        total += distance[poly-2]
-                    }
-                    regionarea = regionArea(locations: polymarkers)
-                  
-                    
                   
                 },label:{
                     Image(systemName: "scope")
@@ -781,205 +734,188 @@ struct ContentView: View{
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .shadow(radius: 20)
                 })
-                .offset(y:-10)
-                Button(action:{
-                    polylinemode.toggle()
-                },label:{
-                    if polylinemode == false{
-                        Image(systemName: "selection.pin.in.out")
-                        
-                            .foregroundStyle(.blue)
-                        
-                            .frame(width:55, height: 55)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                            .shadow(radius: 20)
-                    }
-                    else{
-                        Image(systemName: "arrow.triangle.swap")
-                        
-                            .foregroundStyle(.black)
-                        
-                            .frame(width:55, height: 55)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                            .shadow(radius: 20)
-                    }
-                })
-                .offset(y:-10)
-                Button(action:{
-                    polygonviewer.deletelast()
-                    if polymarkers.count > 0 {
-                        
-                        
-                        polymarkers.removeLast()
-                    }
-                    if poly > 0{
-                        poly = poly-1
-                        
-                    }
-                    if poly > 1 {
-                        
-                            total = total - firstD
-                        
-                    }
-                    if distance.count > 0{
-                        total -= distance[poly-1]
-                       
-                       
-                        distance.removeLast()
-                    }
-                   
-                    if midpoint.count > 0 {
-                        midpoint.removeLast()
-                    }
-                    
-                    if poly > 2{
-                        
-                        angle.removeLast()
-                    }
-                   
-                    
-                    firstA = 0.0
-                    firstD = 0.0
-                    firstC = nil
-                    polyon = false
-                    if poly == 2{
-                        angle = []
-                        angle.append(0)
-                    }
-                    if poly > (Int(a) ?? 3)-1 {
-                        polyon = true
-               
-                        
-                        firstD = distancecalc(coord1:polymarkers[poly-1],coord2:polymarkers[0])*1000
-                        
-                        let latmid = (polymarkers[poly-1].latitude + polymarkers[0].latitude)/2
-                        let longmid = (polymarkers[poly-1].longitude + polymarkers[0].longitude)/2
-                        firstC = CLLocationCoordinate2D(latitude:latmid, longitude: longmid)
-                    }
-                   
-                       
-                    regionarea = regionArea(locations: polymarkers)
-                        
-                    a = "99"
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-                        a = ""
-                    }
-                    if distance.count > 1 {
-                       
-                        let firstendthird = distancecalc(coord1: polymarkers[0], coord2: polymarkers[poly-2])*1000
-                        firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
-                            let firstThird = distancecalc(coord1: polymarkers[1], coord2: polymarkers[poly-1])*1000
-                            angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird)!
-                           
-                    }
-                    if poly > 1 {
-                        
-                            total += firstD
-                    
-                    }
-                 
-                    
-                    
-                    
-                    
-                },label:{
-                    Image(systemName: "arrowshape.left.fill")
-                    
-                        .foregroundStyle(.red)
-                    
-                        .frame(width:55, height: 55)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                        .shadow(radius: 20)
-                })
-                .offset(y:-10)
                 
-                Button(action:{
-                    poly = 0
-                    polygonviewer.clearpoly()
-                    polymarkers = []
-                    midpoint = []
-                    distance = []
-                    total = 0.0
-                    polyon = false
-                    a = ""
-                    angle = []
-                    angle.append(0)
-                    firstA = 0.0
-                    regionarea = regionArea(locations: polymarkers)
-                    firstD = 0
-                }, label:{
-                    Image(systemName: "trash")
-                    
-                        .foregroundStyle(.red)
-                    
-                        .frame(width:55, height: 55)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                        .shadow(radius: 20)
-                })
+             
                 .offset(y:-10)
-                Button(action:{
-                    showselectionscreen.toggle()
-                },label:{
-                    if polylinemode == false{
-                        
-                        let stringholder = String(format:"%.3f",total) + "m"
-                        let stringholderarea = String(format:"%.3f",regionarea) + "m2"
-                        let stringholderkm = String(format:"%.3f",total/1000) + "km"
-                        let stringholderkmarea = String(format:"%.3f",regionarea/1000000) + "km2"
-                        
-                        
-                        if selectkm == false{
-                            Text("Perimeter:\(stringholder)\nArea:\(stringholderarea)")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                                .foregroundStyle(.black)
+                if poly != 0{
+                    Button(action:{
+                        withAnimation{
+                            polygonviewer.deletelast()
+                         
+                            if poly > 0{
+                                poly = poly-1
+                                
+                            }
+                            if poly > 1 {
+                                
+                                total = total - firstD
+                                
+                            }
+                            if distance.count > 0{
+                                total -= distance[poly-1]
+                                
+                                
+                                distance.removeLast()
+                            }
                             
-                                .frame(width:250, height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
+                            if midpoint.count > 0 {
+                                midpoint.removeLast()
+                            }
                             
+                            if poly > 2{
+                                
+                                angle.removeLast()
+                            }
+                            
+                            
+                            firstA = 0.0
+                            firstD = 0.0
+                            firstC = nil
+                            polyon = false
+                            if poly == 2{
+                                angle = []
+                                angle.append(0)
+                            }
+                            if poly > (Int(a) ?? 3)-1 {
+                                polyon = true
+                                
+                                
+                                firstD = distancecalc(coord1:polygonviewer.polycoordinates[poly-1],coord2:polygonviewer.polycoordinates[0])*1000
+                                
+                                let latmid = (polygonviewer.polycoordinates[poly-1].latitude + polygonviewer.polycoordinates[0].latitude)/2
+                                let longmid = (polygonviewer.polycoordinates[poly-1].longitude + polygonviewer.polycoordinates[0].longitude)/2
+                                firstC = CLLocationCoordinate2D(latitude:latmid, longitude: longmid)
+                            }
+                            
+                            
+                            regionarea = regionArea(locations: polygonviewer.polycoordinates)
+                            
+                            a = "99"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+                                
+                                    a = ""
+                                
+                            }
+                            if distance.count > 1 {
+                                
+                                let firstendthird = distancecalc(coord1: polygonviewer.polycoordinates[0], coord2: polygonviewer.polycoordinates[poly-2])*1000
+                                firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
+                                let firstThird = distancecalc(coord1: polygonviewer.polycoordinates[1], coord2: polygonviewer.polycoordinates[poly-1])*1000
+                                angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird)!
+                                
+                            }
+                            if poly > 1 {
+                                
+                                total += firstD
+                                
+                            }
+                            
+                            
+                            
+                        }
+                        
+                    },label:{
+                        Image(systemName: "arrowshape.turn.up.backward.2.fill")
+                        
+                            .foregroundStyle(.red)
+                        
+                            .frame(width:55, height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                    })
+                    .offset(y:-10)
+                    
+                    Button(action:{
+                        withAnimation{
+                            poly = 0
+                            polygonviewer.clearpoly()
+                           
+                            midpoint = []
+                            distance = []
+                            total = 0.0
+                            polyon = false
+                            a = ""
+                            angle = []
+                            angle.append(0)
+                            firstA = 0.0
+                            regionarea = regionArea(locations: polygonviewer.polycoordinates)
+                            firstD = 0
+                        }
+                    }, label:{
+                        Image(systemName: "trash.fill")
+                        
+                            .foregroundStyle(.red)
+                        
+                            .frame(width:55, height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                    })
+                    .offset(y:-10)
+                    Button(action:{
+                        showselectionscreen.toggle()
+                    },label:{
+                        if polylinemode == false{
+                            
+                            let stringholder = String(format:"%.3f",total) + "m"
+                            let stringholderarea = String(format:"%.3f",regionarea) + "m2"
+                            let stringholderkm = String(format:"%.3f",total/1000) + "km"
+                            let stringholderkmarea = String(format:"%.3f",regionarea/1000000) + "km2"
+                            
+                            
+                            if selectkm == false{
+                               
+                                Text("Perimeter:\(stringholder)\nArea:\(stringholderarea)")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .foregroundStyle(.black)
+                                
+                                    .frame(width:250, height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                                
+                            }
+                            else{
+                                Text("Perimeter:\(stringholderkm)\nArea:\(stringholderkmarea)")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .foregroundStyle(.black)
+                                
+                                    .frame(width:250, height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                            }
                         }
                         else{
-                            Text("Perimeter:\(stringholderkm)\nArea:\(stringholderkmarea)")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                                .foregroundStyle(.black)
-                            
-                                .frame(width:250, height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
+                            let stringholder = String(format:"%.3f",total - firstD) + "m"
+                            let stringholderkm = String(format:"%.3f",(total-firstD)/1000) + "km"
+                            if selectkm == true{
+                                Text("Length:\(stringholderkm)")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .foregroundStyle(.black)
+                                
+                                    .frame(width:250, height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                            }
+                            else{
+                                Text("Length:\(stringholder)")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .foregroundStyle(.black)
+                                
+                                    .frame(width:250, height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                            }
                         }
-                    }
-                    else{
-                        let stringholder = String(format:"%.3f",total - firstD) + "m"
-                        let stringholderkm = String(format:"%.3f",(total-firstD)/1000) + "km"
-                        if selectkm == true{
-                            Text("Length:\(stringholderkm)")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                                .foregroundStyle(.black)
-                            
-                                .frame(width:250, height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
-                        }
-                        else{
-                            Text("Length:\(stringholder)")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                                .foregroundStyle(.black)
-                            
-                                .frame(width:250, height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
-                        }
-                    }
-                })
-                .offset(y:-10)
-                .popover(isPresented: $showselectionscreen){
-                    
-                   SelectionScreen(selectkm: $selectkm)
+                    })
+                    .offset(y:-10)
+                    .popover(isPresented: $showselectionscreen){
                         
+                        SelectionScreen(selectkm: $selectkm)
+                        
+                    }
                 }
                 Spacer()
                 Button(action:{

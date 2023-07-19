@@ -12,6 +12,7 @@ struct Authorization_View_: View {
     @AppStorage("uid") var userid: String = ""
     var body: some View {
         if userid == ""{
+            
             if(currentViewShowing == "login") {
                 LoginView(currentShowingView: $currentViewShowing)
                 
@@ -21,6 +22,7 @@ struct Authorization_View_: View {
             }
         }else{
             ContentView()
+        
         }
     }
 }
