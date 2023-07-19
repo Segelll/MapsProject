@@ -21,32 +21,13 @@ struct RegisterView: View {
             return passwordRegex.evaluate(with: password)
         }
     var body: some View {
-        HStack{
+        Image(systemName: "mappin.and.ellipse")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 110, height: 100)
+            .foregroundStyle(.indigo,.black)
+            .padding(-15)
             
-            
-            Image(systemName: "person.fill.badge.plus")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 110, height: 100)
-                .foregroundStyle(.indigo,.black)
-                .padding(-10)
-                .offset(x:12)
-                
-            Image(systemName: "ellipsis")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 80, height: 80)
-                .foregroundStyle(.black)
-                .padding(.horizontal,20)
-                
-            
-            Image(systemName: "map.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 110, height: 100)
-                .foregroundStyle(.black)
-                
-        }
        
         Text("MapKit")
             .fontWidth(.expanded)
@@ -56,6 +37,9 @@ struct RegisterView: View {
 
             .shadow(radius: 20)
         HStack{
+            Image(systemName: "plus.square.dashed")
+                
+                .foregroundStyle(.black,.indigo)
             Text("Register")
                 .fontWidth(.expanded)
                 .font(.footnote)
