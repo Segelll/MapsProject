@@ -51,8 +51,9 @@ struct ContentView: View{
     @State var polylinemode : Bool = false
     @State var showanalytics = false
     @State var tablecontent : [Analytics] = []
-    @State var elevationholder: ResponseBody2?
+    @State var elevationholder : ResponseBody2?
     @State var weatherholder : ResponseBody?
+    
     var body :some View{
         
         
@@ -739,39 +740,10 @@ struct ContentView: View{
                         .shadow(radius: 20)
                 })
                 .offset(y:-10)
-            /*    func doin(_ coordinate:CLLocationCoordinate2D) -> ResponseBody{
-                    Task{
-                        do{
-                            
-                            let holder = try await weathermanager.getWeather(loc: coordinate)
-                           
-                          
-                      
-                        }
-                        catch{
-                            print("error occured")
-                        }
-                        
-                    }
-                    return holder.main.temp
-                }
-                func elevationdoin(_ coordinate:CLLocationCoordinate2D) -> ResponseBody2{
-                    Task{
-                        do{
-                            let eholder = try await elevationmanager.getElevation(loc: coordinate)
-                            
-                           
-                        }
-                        catch{
-                            print("error")
-                        }
-                        return eholder.results[0].elevation
-                                                 }
-                } */
+           //MARK: Where i left off
                     Button(action:{
                         let incrementlat = (polygonviewer.polycoordinates[0].latitude-polygonviewer.polycoordinates[1].latitude)/13
                         let incrementlong = (polygonviewer.polycoordinates[0].longitude-polygonviewer.polycoordinates[1].longitude)/13
-                      
                         for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[1].latitude, through: polygonviewer.polycoordinates[0].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[1].longitude, through: polygonviewer.polycoordinates[0].longitude, by: incrementlong)){
                             
                             Task{
@@ -792,6 +764,7 @@ struct ContentView: View{
                             
                                 
                             }
+                           
                         }
                         
                         
