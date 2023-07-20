@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 import MapKit
 import FirebaseAuth
-
+import Charts
 struct ContentView: View{
     @AppStorage("uid") var userid: String = ""
     @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
@@ -49,6 +49,10 @@ struct ContentView: View{
     @State var total = 0.0
     @State var regionarea : Double = 0.0
     @State var polylinemode : Bool = false
+    @State var showanalytics = false
+    @State var tablecontent : [Analytics] = []
+    @State var elevationholder: ResponseBody2?
+    @State var weatherholder : ResponseBody?
     var body :some View{
         
         
@@ -734,9 +738,89 @@ struct ContentView: View{
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .shadow(radius: 20)
                 })
+                .offset(y:-10)
+            /*    func doin(_ coordinate:CLLocationCoordinate2D) -> ResponseBody{
+                    Task{
+                        do{
+                            
+                            let holder = try await weathermanager.getWeather(loc: coordinate)
+                           
+                          
+                      
+                        }
+                        catch{
+                            print("error occured")
+                        }
+                        
+                    }
+                    return holder.main.temp
+                }
+                func elevationdoin(_ coordinate:CLLocationCoordinate2D) -> ResponseBody2{
+                    Task{
+                        do{
+                            let eholder = try await elevationmanager.getElevation(loc: coordinate)
+                            
+                           
+                        }
+                        catch{
+                            print("error")
+                        }
+                        return eholder.results[0].elevation
+                                                 }
+                } */
+                    Button(action:{
+                        let incrementlat = (polygonviewer.polycoordinates[0].latitude-polygonviewer.polycoordinates[1].latitude)/13
+                        let incrementlong = (polygonviewer.polycoordinates[0].longitude-polygonviewer.polycoordinates[1].longitude)/13
+                      
+                        for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[1].latitude, through: polygonviewer.polycoordinates[0].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[1].longitude, through: polygonviewer.polycoordinates[0].longitude, by: incrementlong)){
+                            
+                            Task{
+                                do{
+                                    self.weatherholder =  try await weathermanager.getWeather(loc: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                                    self.elevationholder =  try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                                }
+                                catch{
+                                    print("error occured")
+                                }
+                                
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2){
+                                tablecontent.append(Analytics(lat: Double(String(format:"%.3f",lat))!,
+                                                              lng: Double(String(format:"%.3f",long))!,
+                                                              temp: ((self.weatherholder!.main.temp)-273.15),
+                                                              elev: self.elevationholder!.results[0].elevation ) )
+                            
+                                
+                            }
+                        }
+                        
+                        
+                  
+                       
+                        
+                        
+                        showanalytics.toggle()
+                    },label:{
+                        if poly == 2 {
+                            Image(systemName: "waveform.path.ecg.rectangle.fill")
+                                .foregroundStyle(.black)
+                                .frame(width:55,height: 55)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                        }
+                        else{
+                            Text("")
+                        }
+                        
+                    })
+                    .sheet(isPresented: $showanalytics,onDismiss:{tablecontent = []}){
+                        AnalyticsView(tablecontent: $tablecontent)
+                    }
+                    
+                
                 
              
-                .offset(y:-10)
+                    .offset(y:-10)
                 if poly != 0{
                     Button(action:{
                         withAnimation{
@@ -947,14 +1031,6 @@ struct ContentView: View{
             .offset(x:20)
                 
         }
-            
-               
-                      
-            
-        
-       
-       
-        //MARK: Where i left off
         .onSubmit(of: .text){
             Task { await searchplace()}
         }
@@ -1024,6 +1100,78 @@ struct ContentView: View{
         
     }
         
+}
+struct AnalyticsView: View {
+    @Binding var tablecontent : [Analytics]
+    var body: some View {
+        HStack{
+        Text("2 point Analytics;")
+        
+            .fontWidth(.expanded)
+            .font(.title)
+            .bold()
+        
+            .foregroundStyle(.black.opacity(0.7))
+            .shadow(radius: 20)
+            .frame(alignment: .leading)
+            .padding(.top,15)
+            .padding(.horizontal,15)
+        Spacer()
+        Image(systemName:"waveform.path.ecg")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .foregroundStyle(.black.opacity(0.7))
+            .padding(.top,15)
+            .padding(.horizontal,15)
+            
+            .frame(width: 75, height: 75)
+    }
+        VStack{
+            Text("Temperature in °C")
+                
+                .fontWidth(.expanded)
+                .font(.subheadline)
+                .bold()
+            
+                .foregroundStyle(.black.opacity(0.7))
+                .shadow(radius: 20)
+            Chart(tablecontent){ content in
+                LineMark(x: .value("first" , "\(content.lat)°\n\(content.lng)°"),
+                         y: .value("second" , content.temp)
+                )
+                .foregroundStyle(.red)
+                PointMark(x: .value("first" , "\(content.lat)°\n\(content.lng)°"),
+                          y: .value("second" , content.temp)
+                )
+                .foregroundStyle(.red)
+                
+            }
+        }
+            .padding(20)
+        VStack{
+            Text("Elevation in meters")
+                .fontWidth(.expanded)
+                .font(.subheadline)
+                .bold()
+            
+                .foregroundStyle(.black.opacity(0.7))
+                .shadow(radius: 20)
+            Chart(tablecontent){ content in
+                LineMark(x: .value("first" ,"\(content.lat)°\n\(content.lng)°"),
+                         y: .value("second" , content.elev)
+                )
+                .foregroundStyle(.indigo)
+                PointMark(x: .value("first" ,"\(content.lat)°\n\(content.lng)°"),
+                          y: .value("second" , content.elev)
+                )
+                .foregroundStyle(.indigo)
+            }
+        }
+            .padding(20)
+            
+        
+       
+    }
 }
 struct SelectionScreen:View{
     @Binding var selectkm :Bool
@@ -1200,6 +1348,15 @@ class ElevationManager{
         let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
         return(decoded)
     }
+}
+struct Analytics:Identifiable {
+    
+    
+    let lat : Double
+    let lng : Double
+    let temp : Double
+    let elev: Double
+    var id: Double { temp }
 }
 struct ResponseBody2: Decodable {
     let results: [Result]
