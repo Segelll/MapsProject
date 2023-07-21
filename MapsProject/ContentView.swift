@@ -741,7 +741,7 @@ struct ContentView: View{
                         .shadow(radius: 20)
                 })
                 .offset(y:-10)
-           //MARK: Where i left off
+           //MARK: ANALYTICS BUTTON
                 if (poly == 2){
                     TextField("Segment",text: $amount)
                         .font(.subheadline)
@@ -755,14 +755,16 @@ struct ContentView: View{
                     
                 }
                     Button(action:{
-                        if Double(amount) ?? 13 > 50 {
-                            amount = "50"
+                       
+                        if Double(amount) ?? 13 > 46 {
+                            amount = "46"
                         }
-                        let incrementlat = (polygonviewer.polycoordinates[0].latitude-polygonviewer.polycoordinates[1].latitude)/(Double(amount) ?? 13.0)
-                        let incrementlong = (polygonviewer.polycoordinates[0].longitude-polygonviewer.polycoordinates[1].longitude)/(Double(amount) ?? 13.0)
+                      
+                        let incrementlat = (polygonviewer.polycoordinates[1].latitude-polygonviewer.polycoordinates[0].latitude)/(Double(amount) ?? 13.0)
+                        let incrementlong = (polygonviewer.polycoordinates[1].longitude-polygonviewer.polycoordinates[0].longitude)/(Double(amount) ?? 13.0)
                        
                         
-                        for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[1].latitude, through: polygonviewer.polycoordinates[0].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[1].longitude, through: polygonviewer.polycoordinates[0].longitude, by: incrementlong)){
+                        for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)){
                           let location = CLLocationCoordinate2D(latitude: lat, longitude: long )
                             Task{
                                 do{
@@ -800,8 +802,9 @@ struct ContentView: View{
                         }
                         
                     })
-                    .sheet(isPresented: $showanalytics,onDismiss:{tablecontent = [] }){
-                        AnalyticsView(tablecontent: $tablecontent)
+                    .fullScreenCover(isPresented: $showanalytics,onDismiss:{tablecontent = [] }){
+                        AnalyticsView(tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount)
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     }
                     
                 
@@ -1088,8 +1091,12 @@ struct ContentView: View{
     }
         
 }
+// MARK: ANALYTICSVIEW
 struct AnalyticsView: View {
+  
     @Binding var tablecontent : [Analytics]
+    @Binding var showanalytics: Bool
+    @Binding var amount : String
     var body: some View {
         HStack{
         Text("2 point Analytics;")
@@ -1104,17 +1111,22 @@ struct AnalyticsView: View {
             .padding(.top,15)
             .padding(.horizontal,15)
         Spacer()
-        Image(systemName:"waveform.path.ecg")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .foregroundStyle(.black.opacity(0.7))
-            .padding(.top,15)
-            .padding(.horizontal,15)
-            
-            .frame(width: 75, height: 75)
+            Button(action:{
+                showanalytics = false
+            },label: {
+                Image(systemName:"waveform.path.ecg")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(.black.opacity(0.7))
+                    .padding(.top,15)
+                    .padding(.horizontal,15)
+                    
+                    .frame(width: 75, height: 75)
+            })
+      
     }
         VStack{
-            Text("Temperature in °C")
+            Text("Latitude, Longitude in Degrees/ Temperature in °C")
                 
                 .fontWidth(.expanded)
                 .font(.subheadline)
@@ -1123,20 +1135,24 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
-                LineMark(x: .value("first" , "\(content.lat)°\n\(content.lng)°"),
+                LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.temp)
                 )
                 .foregroundStyle(.red)
-                PointMark(x: .value("first" , "\(content.lat)°\n\(content.lng)°"),
-                          y: .value("second" , content.temp)
-                )
-                .foregroundStyle(.red)
+               
+                    PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
+                              y: .value("second" , content.temp)
+                    )
+                    .foregroundStyle(.red)
                 
             }
+         
         }
-            .padding(20)
+        .padding(10)
+        Spacer()
+            
         VStack{
-            Text("Elevation in meters")
+            Text("Latitude, Longitude in Degrees/ Elevation in meters")
                 .fontWidth(.expanded)
                 .font(.subheadline)
                 .bold()
@@ -1144,23 +1160,30 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
-                LineMark(x: .value("first" ,"\(content.lat)°\n\(content.lng)°"),
+                LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.elev)
                 )
                 .foregroundStyle(.indigo)
+              
+                    PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                              y: .value("second" , content.elev)
+                    )
+                    .foregroundStyle(.indigo)
                 
-                PointMark(x: .value("first" ,"\(content.lat)°\n\(content.lng)°"),
-                          y: .value("second" , content.elev)
-                )
-                .foregroundStyle(.indigo)
             }
         }
-            .padding(20)
+        .padding(10)
+  
+            
             
         
        
     }
+  
 }
+
+  
+ 
 struct SelectionScreen:View{
     @Binding var selectkm :Bool
     var body:some View{
@@ -1312,7 +1335,7 @@ class LocationViewer: NSObject, ObservableObject,CLLocationManagerDelegate{
 }
 class WeatherManager{
     func getWeather(loc:CLLocationCoordinate2D) async throws->ResponseBody{
-        let apiKey = "a3b0b4eecff65df2ce3a000f2718760c"
+        let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
                 let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
         guard let url = URL(string: urlString) else {
             fatalError("Cannot get weather data")
