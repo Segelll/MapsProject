@@ -53,6 +53,7 @@ struct ContentView: View{
     @State var tablecontent : [Analytics] = []
     @State var elevationholder : ResponseBody2?
     @State var weatherholder : ResponseBody?
+    @State var amount = ""
     
     var body :some View{
         
@@ -641,7 +642,7 @@ struct ContentView: View{
                 },label:{
                     let txttemplat = String(format: "%.3f",centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude)
                     let txttemplong = String(format: "%.3f",centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude)
-                    let txttempalt = String(format: "%.3f",elevation?.results[0].elevation ?? 0,0)
+                    let txttempalt = String(format: "%.3f",elevation?.elevation[0] ?? 0,0)
                     
                         Text("\(txttemplat)° , \(txttemplong)° / \(txttempalt)m")
                             .fontWidth(.expanded)
@@ -741,29 +742,42 @@ struct ContentView: View{
                 })
                 .offset(y:-10)
            //MARK: Where i left off
+                if (poly == 2){
+                    TextField("Segment",text: $amount)
+                        .font(.subheadline)
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .padding(1)
+                        .shadow(radius:20)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 100, height: 100)
+                        .offset(y:-10)
+                    
+                }
                     Button(action:{
-                        let incrementlat = (polygonviewer.polycoordinates[0].latitude-polygonviewer.polycoordinates[1].latitude)/13
-                        let incrementlong = (polygonviewer.polycoordinates[0].longitude-polygonviewer.polycoordinates[1].longitude)/13
+                        if Double(amount) ?? 13 > 50 {
+                            amount = "50"
+                        }
+                        let incrementlat = (polygonviewer.polycoordinates[0].latitude-polygonviewer.polycoordinates[1].latitude)/(Double(amount) ?? 13.0)
+                        let incrementlong = (polygonviewer.polycoordinates[0].longitude-polygonviewer.polycoordinates[1].longitude)/(Double(amount) ?? 13.0)
+                       
+                        
                         for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[1].latitude, through: polygonviewer.polycoordinates[0].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[1].longitude, through: polygonviewer.polycoordinates[0].longitude, by: incrementlong)){
-                            
+                          let location = CLLocationCoordinate2D(latitude: lat, longitude: long )
                             Task{
                                 do{
-                                    self.weatherholder =  try await weathermanager.getWeather(loc: CLLocationCoordinate2D(latitude: lat, longitude: long))
-                                    self.elevationholder =  try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: lat, longitude: long))
+                                    tablecontent.append(Analytics(lat: Double(String(format:"%.3f",lat))!,
+                                                                  lng: Double(String(format:"%.3f",long))!,
+                                                                  temp: (( try await weathermanager.getWeather(loc: location).main.temp)-273.15),
+                                                                  elev: try await elevationmanager.getElevation(loc: location).elevation[0] ) )
+                                    
                                 }
                                 catch{
                                     print("error occured")
                                 }
                                 
                             }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2){
-                                tablecontent.append(Analytics(lat: Double(String(format:"%.3f",lat))!,
-                                                              lng: Double(String(format:"%.3f",long))!,
-                                                              temp: ((self.weatherholder!.main.temp)-273.15),
-                                                              elev: self.elevationholder!.results[0].elevation ) )
-                            
-                                
-                            }
+                          
                            
                         }
                         
@@ -771,7 +785,7 @@ struct ContentView: View{
                   
                        
                         
-                        
+                      
                         showanalytics.toggle()
                     },label:{
                         if poly == 2 {
@@ -786,7 +800,7 @@ struct ContentView: View{
                         }
                         
                     })
-                    .sheet(isPresented: $showanalytics,onDismiss:{tablecontent = []}){
+                    .sheet(isPresented: $showanalytics,onDismiss:{tablecontent = [] }){
                         AnalyticsView(tablecontent: $tablecontent)
                     }
                     
@@ -1010,7 +1024,10 @@ struct ContentView: View{
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
 
-           
+            Task{
+                
+                    elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude))
+                }
             
         })
         .onMapCameraChange(frequency: .onEnd, { newcamera in
@@ -1038,10 +1055,7 @@ struct ContentView: View{
 
             }
         
-         Task{
-             
-                 elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centeronend?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centeronend?.longitude ?? locationViewer.currentcoordinate.longitude))
-             }
+         
             
         })
        
@@ -1134,6 +1148,7 @@ struct AnalyticsView: View {
                          y: .value("second" , content.elev)
                 )
                 .foregroundStyle(.indigo)
+                
                 PointMark(x: .value("first" ,"\(content.lat)°\n\(content.lng)°"),
                           y: .value("second" , content.elev)
                 )
@@ -1311,13 +1326,14 @@ class WeatherManager{
 }
 class ElevationManager{
     func getElevation(loc:CLLocationCoordinate2D)  async throws-> ResponseBody2{
-        let urlString = "https://api.open-elevation.com/api/v1/lookup?locations=\(loc.latitude),\(loc.longitude)"
+      //  let urlString = "https://api.open-elevation.com/api/v1/lookup?locations=\(loc.latitude),\(loc.longitude)"
+        let urlString = "https://api.open-meteo.com/v1/elevation?latitude=\(loc.latitude)&longitude=\(loc.longitude)"
         guard let url = URL(string: urlString) else {
             fatalError("Cannot get elevation data")
         }
         let urlrequest = URLRequest(url: url)
         let (data, response) = try await URLSession.shared.data(for: urlrequest)
-//       guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching elevation data") }
+       guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching elevation data") }
         let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
         return(decoded)
     }
@@ -1331,17 +1347,10 @@ struct Analytics:Identifiable {
     let elev: Double
     var id: Double { temp }
 }
-struct ResponseBody2: Decodable {
-    let results: [Result]
-    
-    
+struct ResponseBody2 : Decodable{
+    let elevation: [Double]
+  
 }
-    struct Result: Decodable {
-        let latitude: Double
-        let longitude: Double
-        let elevation: Double
-        
-    }
     
 
 
