@@ -1031,10 +1031,7 @@ struct ContentView: View{
         }
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
-            Task{
-                
-                    elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude))
-                }
+        
             
             
         })
@@ -1058,11 +1055,16 @@ struct ContentView: View{
                     }
                     
                 }
+                
                
                 
             
 
             }
+            Task{
+                
+                    elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centeronend?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centeronend?.longitude ?? locationViewer.currentcoordinate.longitude))
+                }
         
          
             
