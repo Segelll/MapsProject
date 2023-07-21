@@ -54,7 +54,7 @@ struct ContentView: View{
     @State var elevationholder : ResponseBody2?
     @State var weatherholder : ResponseBody?
     @State var amount = ""
-    
+    @State var Loading :Bool = false
     var body :some View{
         
         
@@ -760,42 +760,47 @@ struct ContentView: View{
                             amount = "46"
                         }
                       
-                        let incrementlat = (polygonviewer.polycoordinates[1].latitude-polygonviewer.polycoordinates[0].latitude)/(Double(amount) ?? 13.0)
-                        let incrementlong = (polygonviewer.polycoordinates[1].longitude-polygonviewer.polycoordinates[0].longitude)/(Double(amount) ?? 13.0)
-                       
+                        Loading = true
+                            Task {
+                                   do {
+                                       try await fetchDataFromServer()
+                                       showanalytics.toggle()
+                                       Loading = false
+                                   } catch {
+                                       print("Error fetching data from server: \(error)")
+                                   }
+                               }
                         
-                        for (lat,long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat),stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)){
-                          let location = CLLocationCoordinate2D(latitude: lat, longitude: long )
-                            Task{
-                                do{
-                                    tablecontent.append(Analytics(lat: Double(String(format:"%.3f",lat))!,
-                                                                  lng: Double(String(format:"%.3f",long))!,
-                                                                  temp: (( try await weathermanager.getWeather(loc: location).main.temp)-273.15),
-                                                                  elev: try await elevationmanager.getElevation(loc: location).elevation[0] ) )
-                                    
-                                }
-                                catch{
-                                    print("error occured")
-                                }
-                                
-                            }
+                          
                           
                            
-                        }
-                        
                         
                   
-                       
+                      
+                        
+                  
+                        
                         
                       
-                        showanalytics.toggle()
+                        
                     },label:{
                         if poly == 2 {
-                            Image(systemName: "waveform.path.ecg.rectangle.fill")
-                                .foregroundStyle(.black)
-                                .frame(width:55,height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
+                            if Loading == false {
+                                
+                                
+                                Image(systemName: "waveform.path.ecg.rectangle.fill")
+                                    .foregroundStyle(.black)
+                                    .frame(width:55,height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                            }
+                            else{
+                                Image(systemName: "wifi.router.fill")
+                                    .foregroundStyle(.green)
+                                    .frame(width:55,height: 55)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                    .shadow(radius: 20)
+                            }
                         }
                         else{
                             Text("")
@@ -1026,11 +1031,11 @@ struct ContentView: View{
         }
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
-
             Task{
                 
                     elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude))
                 }
+            
             
         })
         .onMapCameraChange(frequency: .onEnd, { newcamera in
@@ -1045,6 +1050,7 @@ struct ContentView: View{
                                 weatherfound = true
                             
                         }
+                        
                         
                     }
                     catch{
@@ -1416,8 +1422,32 @@ extension ResponseBody.MainResponse {
     var tempMin: Double { return temp_min }
     var tempMax: Double { return temp_max }
 }
-
+// MARK: extension
 extension ContentView{
+    func fetchDataFromServer() async throws {
+        
+        
+        let incrementlat = (polygonviewer.polycoordinates[1].latitude - polygonviewer.polycoordinates[0].latitude) / (Double(amount) ?? 13)
+        let incrementlong = (polygonviewer.polycoordinates[1].longitude - polygonviewer.polycoordinates[0].longitude) / (Double(amount) ?? 13)
+        
+        for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
+            let location = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            
+            do {
+                let weatherData = try await weathermanager.getWeather(loc: location)
+                let elevationData = try await elevationmanager.getElevation(loc: location)
+                
+                tablecontent.append(Analytics(
+                    lat: Double(String(format: "%.3f", lat))!,
+                    lng: Double(String(format: "%.3f", long))!,
+                    temp: (weatherData.main.temp - 273.15),
+                    elev: elevationData.elevation[0])
+                )
+            } catch {
+                print("error occurred")
+            }
+        }
+    }
     func radians(degrees: Double) -> Double {
         return degrees * .pi / 180
     }
