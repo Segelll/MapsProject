@@ -12,7 +12,7 @@ import FirebaseAuth
 import Charts
 struct ContentView: View{
     @AppStorage("uid") var userid: String = ""
-    @State private var cameraPosition: MapCameraPosition = .region(.userRegion)
+    @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 39.925533, longitude: 32.866287) ,latitudinalMeters: 12500,longitudinalMeters: 12500))
     @State var mapselection: MKMapItem?
     @State private var searchText = ""
     @State private var Destinationlocation = [MKMapItem]()
@@ -55,6 +55,13 @@ struct ContentView: View{
     @State var weatherholder : ResponseBody?
     @State var amount = ""
     @State var Loading :Bool = false
+    @State var tablemarkeron :Bool = false
+    @State var tablecoord = CLLocationCoordinate2D(latitude:0,longitude:0)
+    @State var popupshowedbefore : Bool = false
+    @State var markercolor : Color = .black
+    @State var markername : Double = 0
+    @State var analyzed = false
+    @State var showdate = false
     var body :some View{
         
         
@@ -91,14 +98,20 @@ struct ContentView: View{
                 
                 
                 if tapped == true{
-                    Marker(weather?.name ?? "",image:"thermometer.sun.fill", coordinate:centeronend ?? locationViewer.currentcoordinate)
+                    Marker(weather?.name ?? "",image:"thermometer.sun.fill", coordinate: centeronend ?? locationViewer.currentcoordinate)
                         .tint(.indigo)
                     
                 }
                
             }
             
-            
+            if tablemarkeron == true{
+                let nameholder = String(format: markercolor == .blue ? "%.0f" : (markercolor == .red ? "%.1f" : (markercolor == .green ? "%.0f" : (markercolor == .yellow ? "%.1f" : ""))), markername)
+                Marker(markercolor == .blue ? "\(nameholder)%" : (markercolor == .red ? "\(nameholder)°C" : (markercolor == .green ? "\(nameholder)m" : (markercolor == .yellow ? "\(nameholder)m/s" : ""))),
+                           image: markercolor == .blue ? "humidity.fill" : (markercolor == .red ? "thermometer.high" : (markercolor == .green ? "stairs" : (markercolor == .yellow ? "wind" : ""))),
+                           coordinate: tablecoord)
+                        .tint(markercolor)
+            }
             if poly > 0 {
                 ForEach(Range(0...poly-1)){ i in
                     
@@ -123,40 +136,53 @@ struct ContentView: View{
                     Annotation("",coordinate:polygonviewer.polycoordinates[i]){
                         Spacer()
                         if i == 0{
-                          
-                                Circle()
+                            
+                            Circle()
                                 .frame(width:12,height:12)
                                 .foregroundStyle(.black)
                                 .offset(y:3)
-                         
+                            
                         }
                         else if i == poly-1{
                             
-                                Circle()
-                                    .frame(width:15,height:15)
-                                    .foregroundStyle(.gray)
-                                    .offset(y:3)
-                                
-                                
+                            Circle()
+                                .frame(width:15,height:15)
+                                .foregroundStyle(.gray)
+                                .offset(y:3)
+                            
+                            
                             
                         }
-                   
-                     
-                        if angle.count > 0 {
-                            if polylinemode == false{
-                          
-                                    Text("\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°")
-                                        .fontWidth(.expanded)
-                                        .font(.footnote)
-                                        .foregroundStyle(.gray)
-                                        .bold()
-                                        .shadow(radius: 20)
-                                        .offset(y: 10)
+                        if polylinemode == false {
+                            if poly > 2{
+                                if angle.count > 0 {
+                                    if polylinemode == false{
+                                        
+                                        Text("\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°")
+                                        
+                                            .fontWidth(.expanded)
+                                            .font(.footnote)
+                                            .foregroundStyle(satellitebutton ? .white : .black)
+                                            .bold()
+                                            .shadow(radius: 20)
+                                            .offset(y: 10)
+                                        
+                                        
+                                    }
+                                }
                                 
-                               
+                            }
+                            else{
+                                Text("--")
+                                
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .foregroundStyle(satellitebutton ? .white : .black)
+                                    .bold()
+                                    .shadow(radius: 20)
+                                    .offset(y: 10)
                             }
                         }
-                        
                     }
                 }
                 
@@ -218,6 +244,36 @@ struct ContentView: View{
         
         .overlay(alignment: .top){
             HStack{
+                Button(action:{
+                    showdate.toggle()
+                },label:{
+            
+                        
+                        Text("\(Date().formatted(.dateTime.hour().minute()))")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .italic()
+                            .fontWidth(.expanded)
+                            .font(.footnote)
+                            .foregroundStyle(.gray)
+                            .frame(width:90, height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                    
+                })
+                .popover(isPresented: $showdate){
+                    Text("\(Date().formatted(.dateTime.day().month().hour().minute().second()))")
+                        .fontWidth(.expanded)
+                        .bold()
+                        .italic()
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                        .frame(width:170, height: 55)
+                       
+                        .shadow(radius: 20)
+                }
+               
                 
                 Button(action:{
                     locationViewer.checklocationservices()
@@ -528,7 +584,8 @@ struct ContentView: View{
                         }
                     }
                     if searchmode == false{
-                       
+                       redmode = false
+                        placeredmode = false
                         tapped = true
                         
                         Task{
@@ -632,6 +689,10 @@ struct ContentView: View{
          
                 
         }
+        .onChange(of:amount){
+            tablecontent = []
+            analyzed = false
+        }
         .overlay(alignment:.bottom){
             HStack{
                 Spacer()
@@ -642,7 +703,7 @@ struct ContentView: View{
                 },label:{
                     let txttemplat = String(format: "%.3f",centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude)
                     let txttemplong = String(format: "%.3f",centerlocation?.longitude ?? locationViewer.currentcoordinate.longitude)
-                    let txttempalt = String(format: "%.3f",elevation?.elevation[0] ?? 0,0)
+                    let txttempalt = String(format: "%.0f",elevation?.elevation[0] ?? 0,0)
                     
                         Text("\(txttemplat)° , \(txttemplong)° / \(txttempalt)m")
                             .fontWidth(.expanded)
@@ -755,32 +816,26 @@ struct ContentView: View{
                     
                 }
                     Button(action:{
-                       
-                        if Double(amount) ?? 13 > 46 {
-                            amount = "46"
-                        }
-                      
-                        Loading = true
+                        if analyzed == false{
+                            if Double(amount) ?? 13 > 46 {
+                                amount = "46"
+                            }
+                            
+                            Loading = true
                             Task {
-                                   do {
-                                       try await fetchDataFromServer()
-                                       showanalytics.toggle()
-                                       Loading = false
-                                   } catch {
-                                       print("Error fetching data from server: \(error)")
-                                   }
-                               }
-                        
-                          
-                          
-                           
-                        
-                  
-                      
-                        
-                  
-                        
-                        
+                                do {
+                                    try await fetchDataFromServer()
+                                    showanalytics.toggle()
+                                    Loading = false
+                                } catch {
+                                    print("Error fetching data from server: \(error)")
+                                }
+                            }
+                            
+                        }
+                        else{
+                            showanalytics.toggle()
+                        }
                       
                         
                     },label:{
@@ -807,8 +862,8 @@ struct ContentView: View{
                         }
                         
                     })
-                    .fullScreenCover(isPresented: $showanalytics,onDismiss:{tablecontent = [] }){
-                        AnalyticsView(tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount)
+                    .fullScreenCover(isPresented: $showanalytics){
+                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     }
                     
@@ -888,6 +943,11 @@ struct ContentView: View{
                                 total += firstD
                                 
                             }
+                            if poly == 1 {
+                                tablemarkeron = false
+                                tablecontent = []
+                                analyzed = false
+                            }
                             
                             
                             
@@ -919,6 +979,9 @@ struct ContentView: View{
                             firstA = 0.0
                             regionarea = regionArea(locations: polygonviewer.polycoordinates)
                             firstD = 0
+                            tablemarkeron = false
+                            tablecontent = []
+                            analyzed = false
                         }
                     }, label:{
                         Image(systemName: "trash.fill")
@@ -997,6 +1060,7 @@ struct ContentView: View{
                     }
                 }
                 Spacer()
+              
                 Button(action:{
                     let firebaseAuth = Auth.auth()
                                     do {
@@ -1041,10 +1105,10 @@ struct ContentView: View{
                 Task{
                     do{
                         if mapselection == nil{
-                          
-                              
-                           weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
-                                weatherfound = true
+                            
+                            
+                            weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                            weatherfound = true
                             
                         }
                         
@@ -1055,16 +1119,17 @@ struct ContentView: View{
                     }
                     
                 }
+            }
+                Task{
+                                
+                                    elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centeronend?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centeronend?.longitude ?? locationViewer.currentcoordinate.longitude))
+                                }
                 
                
                 
             
 
-            }
-            Task{
-                
-                    elevation  = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: centeronend?.latitude ?? locationViewer.currentcoordinate.latitude, longitude: centeronend?.longitude ?? locationViewer.currentcoordinate.longitude))
-                }
+            
         
          
             
@@ -1076,19 +1141,28 @@ struct ContentView: View{
             redmode = false
             placeredmode = true
             
-            if placemark != nil{
-                Task{
-                    do{
-                        weather = try await weathermanager.getWeather(loc:placemark!.coordinate )
-                        weatherfound = true
-                    }
-                    catch{
-                        print("error occured")
+            if popupshowedbefore == false{
+                if placemark != nil{
+                    Task{
+                        do{
+                            weather = try await weathermanager.getWeather(loc:placemark!.coordinate  )
+                            weatherfound = true
+                        }
+                        catch{
+                            print("error occured")
+                        }
                     }
                 }
-          
-        }
-            shownewscreen.toggle()
+                
+                
+                
+                
+                shownewscreen.toggle()
+                popupshowedbefore = true
+            }
+            else {
+                popupshowedbefore = false
+            }
             
         })
        
@@ -1101,10 +1175,14 @@ struct ContentView: View{
 }
 // MARK: ANALYTICSVIEW
 struct AnalyticsView: View {
-  
+    @Binding var cameraposition: MapCameraPosition
     @Binding var tablecontent : [Analytics]
     @Binding var showanalytics: Bool
     @Binding var amount : String
+    @Binding var tablecoord : CLLocationCoordinate2D
+    @Binding var tablemarkeron : Bool
+    @Binding var markercolor : Color
+    @Binding var markername : Double
     var body: some View {
         HStack{
         Text("2 point Analytics;")
@@ -1143,17 +1221,48 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
+                
                 LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.temp)
                 )
+                
                 .foregroundStyle(.red)
                
                     PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.temp)
                     )
+                    .symbol(BasicChartSymbolShape.circle)
                     .foregroundStyle(.red)
-                
+                   
+            
             }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+             
+                            .onTapGesture { location in
+                                    
+                                  
+                                   
+                                
+                                    let (coord, temp) = proxy.value(at: location, as: (String, Double).self)!
+                                    markername = tablecontent.first(where: { $0.lat == convertStringToCLLocationCoordinate(coord)!.latitude })!.temp
+                                        markercolor = .red
+                                        tablecoord = convertStringToCLLocationCoordinate(coord)!
+                                        tablemarkeron = true
+                                        showanalytics = false
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                       
+                                   
+                                    
+                                }
+ 
+                  
+                    
+                }
+           
+            }
+            
          
         }
         .padding(10)
@@ -1171,17 +1280,135 @@ struct AnalyticsView: View {
                 LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.elev)
                 )
-                .foregroundStyle(.indigo)
+                
+                .foregroundStyle(.green)
               
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.elev)
                     )
-                    .foregroundStyle(.indigo)
+                    .symbol(BasicChartSymbolShape.diamond)
+                    .foregroundStyle(.green)
                 
+            }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+                        .onTapGesture { location in
+                                  
+                                   
+                                    let (coord, elev) = proxy.value(at: location, as: (String, Double).self)!
+                                    markername = tablecontent.first(where: { $0.lat == convertStringToCLLocationCoordinate(coord)!.latitude })!.elev
+                                     markercolor = .green
+                                        tablecoord = convertStringToCLLocationCoordinate(coord)!
+                                        tablemarkeron = true
+                                        showanalytics = false
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                   
+                                    
+                                }
+                                
+                        
+                  
+                    
+                }
+           
             }
         }
         .padding(10)
-  
+        Spacer()
+        VStack{
+            Text("Latitude, Longitude in Degrees/ Humidity in %")
+                .fontWidth(.expanded)
+                .font(.subheadline)
+                .bold()
+            
+                .foregroundStyle(.black.opacity(0.7))
+                .shadow(radius: 20)
+            Chart(tablecontent){ content in
+                LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                         y: .value("second" , content.hum)
+                )
+                
+                .foregroundStyle(.blue)
+              
+                    PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                              y: .value("second" , content.hum)
+                    )
+                    .symbol(BasicChartSymbolShape.square)
+                    .foregroundStyle(.blue)
+                
+            }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+                        .onTapGesture { location in
+                                    let (coord, hum) = proxy.value(at: location, as: (String, Double).self)!
+                                    markername = tablecontent.first(where: { $0.lat == convertStringToCLLocationCoordinate(coord)!.latitude })!.hum
+                                     markercolor = .blue
+                                        tablecoord = convertStringToCLLocationCoordinate(coord)!
+                                        tablemarkeron = true
+                                        showanalytics = false
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                   
+                                    
+                                }
+                                
+                        
+                  
+                    
+                }
+           
+            }
+        }
+        Spacer()
+            
+        VStack{
+            Text("Latitude, Longitude in Degrees/ Wind Speed in meters per second")
+                .fontWidth(.expanded)
+                .font(.subheadline)
+                .bold()
+            
+                .foregroundStyle(.black.opacity(0.7))
+                .shadow(radius: 20)
+            Chart(tablecontent){ content in
+                LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                         y: .value("second" , content.wind)
+                )
+                
+                .foregroundStyle(.yellow)
+              
+                    PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                              y: .value("second" , content.wind)
+                    )
+                    .symbol(BasicChartSymbolShape.triangle)
+                    .foregroundStyle(.yellow)
+                
+            }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+                        .onTapGesture { location in
+                                  
+                                   
+                                    let (coord, wind) = proxy.value(at: location, as: (String, Double).self)!
+                                    markername = tablecontent.first(where: { $0.lat == convertStringToCLLocationCoordinate(coord)!.latitude })!.wind
+                                     markercolor = .yellow
+                                        tablecoord = convertStringToCLLocationCoordinate(coord)!
+                                        tablemarkeron = true
+                                        showanalytics = false
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                   
+                                    
+                                }
+                                
+                        
+                  
+                    
+                }
+           
+            }
+        }
+        .padding(10)
             
             
         
@@ -1224,10 +1451,14 @@ struct SelectionScreen:View{
         
     }
 }
-
+// MARK: newscreen
 struct newscreen:View{
     var weather:ResponseBody
+    var elevationmanager = ElevationManager()
+    @State var elevation : ResponseBody2?
+   
     var body:some View{
+       
         ZStack{
             HStack(alignment:.top){
             Spacer()
@@ -1237,22 +1468,31 @@ struct newscreen:View{
                         .font(.largeTitle)
                         .fontWidth(.expanded)
                         .textCase(.uppercase)
+                    let latholder = String(format:"%.3f", weather.coord.lat)
+                    let lonholder = String(format:"%.3f", weather.coord.lon)
+                    let elevholder = String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0)
+                    Text("(\(latholder)°, \(lonholder)°/\(elevholder)m)")
+                        .bold()
+                        .font(.footnote)
+                        .fontWidth(.expanded)
+                    
                     Text("\(Date().formatted(.dateTime.day().month().hour().minute()))")
                         .fontWidth(.expanded)
-                        .textCase(.uppercase)
+                        .bold()
                         .italic()
+                        .font(.caption)
                 }
                 
                 Spacer()
                 VStack{
-                    Text("\(Int(weather.main.temp.rounded()-273.15))°C")
+                    Text("\(String(format:"%.1f",Double(weather.main.temp-273.15)))°C")
                         .fontWidth(.expanded)
                         .bold()
                         .font(.system(size: 33))
-                    Text("Humidity: \(Int(weather.main.humidity.rounded()))%")
+                    Text("Humidity:\(String(format:"%.0f",Double(weather.main.humidity)))%")
                         .fontWidth(.expanded)
                         .bold()
-                    Text("Wind Speed: \(Int(weather.wind.speed))m/s")
+                    Text("Wind Speed:\(String(format:"%.1f",Double(weather.wind.speed)))m/s")
                         .fontWidth(.expanded)
                         .bold()
                 }
@@ -1261,6 +1501,12 @@ struct newscreen:View{
             
             
         }
+        .onAppear {
+                   Task {
+                           elevation = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: weather.coord.lat, longitude: weather.coord.lon))
+                   }
+               }
+        
         .frame(
               width: 520,
               height:120
@@ -1369,6 +1615,7 @@ class ElevationManager{
         return(decoded)
     }
 }
+
 struct Analytics:Identifiable {
     
     
@@ -1376,7 +1623,9 @@ struct Analytics:Identifiable {
     let lng : Double
     let temp : Double
     let elev: Double
-    var id: Double { temp }
+    let hum : Double
+    let wind : Double
+    var id: Double { lat }
 }
 struct ResponseBody2 : Decodable{
     let elevation: [Double]
@@ -1431,7 +1680,7 @@ extension ContentView{
         
         let incrementlat = (polygonviewer.polycoordinates[1].latitude - polygonviewer.polycoordinates[0].latitude) / (Double(amount) ?? 13)
         let incrementlong = (polygonviewer.polycoordinates[1].longitude - polygonviewer.polycoordinates[0].longitude) / (Double(amount) ?? 13)
-        
+        analyzed = true
         for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
             let location = CLLocationCoordinate2D(latitude: lat, longitude: long)
             
@@ -1443,7 +1692,9 @@ extension ContentView{
                     lat: Double(String(format: "%.3f", lat))!,
                     lng: Double(String(format: "%.3f", long))!,
                     temp: (weatherData.main.temp - 273.15),
-                    elev: elevationData.elevation[0])
+                    elev: elevationData.elevation[0],
+                    hum: weatherData.main.humidity,
+                    wind: weatherData.wind.speed)
                 )
             } catch {
                 print("error occurred")
@@ -1529,16 +1780,28 @@ extension ContentView{
 
 
 }
-extension CLLocationCoordinate2D{
-    
-    static var userLocation: CLLocationCoordinate2D{
-        return .init(latitude: 39.925533, longitude: 32.866287)
+
+
+extension AnalyticsView {
+    func convertStringToCLLocationCoordinate(_ coordinateString: String) -> CLLocationCoordinate2D? {
+        // Split the string into latitude and longitude components
+        let components = coordinateString.split(whereSeparator: \.isNewline)
         
-    }
-}
-extension MKCoordinateRegion{
-    static var userRegion: MKCoordinateRegion{
-        return .init(center: .userLocation ,latitudinalMeters: 12500,longitudinalMeters: 12500)
+        guard components.count == 2 else {
+            print("Invalid coordinate string format")
+            return nil
+        }
+        
+        // Convert latitude and longitude strings to Double values
+        if let latitude = Double(components[0].trimmingCharacters(in: .whitespaces)),
+           let longitude = Double(components[1].trimmingCharacters(in: .whitespaces)) {
+            // Create a CLLocationCoordinate2D object
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            return coordinate
+        } else {
+            print("Invalid latitude or longitude format")
+            return nil
+        }
     }
 }
 
