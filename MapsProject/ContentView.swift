@@ -69,14 +69,26 @@ struct ContentView: View{
         Map(position: $cameraPosition, selection:$mapselection){
             
             if markeron == true{
-                if redmode == true{
-                    Marker("You", image: "thermometer.sun.fill", coordinate: locationViewer.currentcoordinate )
-                        .tint(.red)
-                }else{
-                    Marker("You", image: "location.fill", coordinate: locationViewer.currentcoordinate )
-                        .tint(.blue)
-                }}else{
-                    
+                
+               
+                    Annotation("",coordinate:locationViewer.currentcoordinate){
+                        ZStack{
+                            Circle()
+                                .frame(width:32,height:32)
+                                .foregroundStyle(redmode ? .red.opacity(0.25) : .blue.opacity(0.25))
+                            
+                            Circle()
+                                .frame(width:20,height:20)
+                                .foregroundStyle(.white)
+                            
+                            Circle()
+                                .frame(width:12,height:12)
+                                .foregroundStyle(redmode ? .red : .blue)
+                            
+                        }
+                        
+                        
+                    }
                 }
             if searchmode == true{
                 ForEach (Destinationlocation ,id: \.self){ item in
@@ -106,7 +118,7 @@ struct ContentView: View{
             }
             
             if tablemarkeron == true{
-                let nameholder = String(format: markercolor == .blue ? "%.0f" : (markercolor == .red ? "%.1f" : (markercolor == .green ? "%.0f" : (markercolor == .yellow ? "%.1f" : ""))), markername)
+                let nameholder =  "(\(tablecoord.latitude)°,\(tablecoord.longitude)°)\n\(String(format: markercolor == .blue ? "%.0f" : (markercolor == .red ? "%.1f" : (markercolor == .green ? "%.0f" : (markercolor == .yellow ? "%.1f" : ""))), markername))"
                 Marker(markercolor == .blue ? "\(nameholder)%" : (markercolor == .red ? "\(nameholder)°C" : (markercolor == .green ? "\(nameholder)m" : (markercolor == .yellow ? "\(nameholder)m/s" : ""))),
                            image: markercolor == .blue ? "humidity.fill" : (markercolor == .red ? "thermometer.high" : (markercolor == .green ? "stairs" : (markercolor == .yellow ? "wind" : ""))),
                            coordinate: tablecoord)
@@ -116,102 +128,98 @@ struct ContentView: View{
                 ForEach(Range(0...poly-1)){ i in
                     
                     if i > 0{
-                        if  selectkm == false {
-                            let stringholder = "\(String(format: "%.3f", distance[i-1]))m"
-                            Annotation(stringholder, coordinate:midpoint[i-1]){
-                                
-                               
-                            }
-                        }
-                            else {
-                                let stringholder = "\(String(format: "%.3f", distance[i-1]/1000))km"
-                                     Annotation(stringholder, coordinate:midpoint[i-1]){
-                                         
-                                        
-                            }
-                        }
+                        
+                        let stringholder = selectkm ? "\(String(format: "%.3f", distance[i-1]/1000))km": "\(String(format: "%.3f", distance[i-1]))m"
+                        Annotation(stringholder, coordinate:midpoint[i-1]){}
+                        
+                        
+                        
+                        
+                        
                     }
-                 
-                 
+                    
+                    
                     Annotation("",coordinate:polygonviewer.polycoordinates[i]){
-                        Spacer()
-                        if i == 0{
+                        ZStack{
+                            
+                            
                             
                             Circle()
-                                .frame(width:12,height:12)
-                                .foregroundStyle(.black)
-                                .offset(y:3)
-                            
-                        }
-                        else if i == poly-1{
-                            
-                            Circle()
-                                .frame(width:15,height:15)
-                                .foregroundStyle(.gray)
-                                .offset(y:3)
+                                .shadow(color:.black,radius: 0.3)
+                                .frame(width:18,height:18)
+                                .foregroundStyle(.white)
+                                .shadow(radius:3)
+                                .shadow(radius:2)
                             
                             
                             
-                        }
-                        if polylinemode == false {
-                            if poly > 2{
-                                if angle.count > 0 {
-                                    if polylinemode == false{
-                                        
-                                        Text("\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°")
-                                        
-                                            .fontWidth(.expanded)
-                                            .font(.footnote)
-                                            .foregroundStyle(satellitebutton ? .white : .black)
-                                            .bold()
-                                            .shadow(radius: 20)
-                                            .offset(y: 10)
-                                        
-                                        
-                                    }
-                                }
+                            if i == poly-1{
                                 
+                                Circle()
+                                    .frame(width:4,height:4)
+                                    .foregroundStyle(.green)
+                                    .shadow(radius:3)
+                                    .shadow(radius:2)
                             }
-                            else{
-                                Text("--")
+                            else if i == 0 {
+                                
+                                Circle()
+                                
+                                    .frame(width:4,height:4)
+                                    .foregroundStyle(.black)
+                                    .shadow(radius:3)
+                                    .shadow(radius:2)
+                            }
+                            
+                            
+                            
+                            
+                            
+                            if polylinemode == false && poly > 2 {
+                                
+                                
+                                Text("(\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°)")
                                 
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(satellitebutton ? .white : .black)
+                                    .foregroundStyle(.white)
                                     .bold()
-                                    .shadow(radius: 20)
-                                    .offset(y: 10)
+                                    .shadow(color:.black,radius: 0.1)
+                                    .shadow(color:.black,radius: 0.2)
+                                    .shadow(color:.black,radius: 0.3)
+                                    .shadow(color:.black,radius: 0.4)
+                                    .shadow(color:.black,radius: 0.5)
+                                    .shadow(color:.black,radius: 0.6)
+                                
+                                    .offset(y:17)
+                                
+                                
+                                
                             }
                         }
                     }
                 }
                 
                 
-                if polylinemode == false{
-                    if polyon == true{
-                        if selectkm == false{
-                            let stringholder = "\(String(format: "%.3f", firstD))m"
-                            Annotation(String(stringholder), coordinate:firstC ?? locationViewer.currentcoordinate){
-                                
-                            }
-                        }
-                        else{
-                            let stringholder = "\(String(format: "%.3f", firstD/1000))km"
-                            Annotation(String(stringholder), coordinate:firstC ?? locationViewer.currentcoordinate){
-                                
-                           
-                            }
-                        }
-                    }
+                if polylinemode == false && polyon == true{
+                    
+                    
+                    let stringholder = selectkm ? "\(String(format: "%.3f", firstD/1000))km": "\(String(format: "%.3f", firstD))m"
+                    Annotation(String(stringholder), coordinate:firstC ?? locationViewer.currentcoordinate){}
+                    
+                    
+                    
+                    
+                    
                     
                 }
-              
-            
-           
-                if polylinemode == true{
+                
+                
+                
+                if polylinemode == true || poly == 2{
                     if poly > (Int(a) ?? 2)-1 {
                         MapPolyline(MKPolyline(coordinates: polygonviewer.polycoordinates, count: poly))
-                            .stroke(satellitebutton ? .white : .black, lineWidth: 2)
+                            .stroke(satellitebutton ? .white : .black, lineWidth: 3)
                     }
                 }
             }
@@ -219,8 +227,8 @@ struct ContentView: View{
               
                     if polylinemode == false{
                         MapPolygon(coordinates: polygonviewer.polycoordinates)
-                            .stroke(.black, lineWidth: 2)
-                            .foregroundStyle(.black.opacity(0.2))
+                            .stroke(satellitebutton ? .white : .black, lineWidth: 2)
+                            .foregroundStyle(satellitebutton ? .white.opacity(0.1) : .black.opacity(0.1))
                     }
                         
                 
@@ -233,6 +241,7 @@ struct ContentView: View{
             
          
         }
+        
         
         
         
@@ -261,6 +270,7 @@ struct ContentView: View{
                             .shadow(radius: 20)
                     
                 })
+                
                 .popover(isPresented: $showdate){
                     Text("\(Date().formatted(.dateTime.day().month().hour().minute().second()))")
                         .fontWidth(.expanded)
@@ -282,6 +292,8 @@ struct ContentView: View{
                         markeron.toggle()
                         
                     }
+                    
+                  
                     
                     
                     
@@ -305,8 +317,13 @@ struct ContentView: View{
                 })
                 
                 Button(action:{
-                    redmode = true
+                 
+                        redmode = true
+                    
                     tapped = false
+                    withAnimation{
+                        placeredmode = false
+                    }
                     cameraPosition = .region (MKCoordinateRegion(center: locationViewer.currentcoordinate ,latitudinalMeters: 12500,longitudinalMeters: 12500))
                     if markeron == true{
                         Task{
@@ -343,11 +360,32 @@ struct ContentView: View{
                             .shadow(radius:20)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 270, height: 100)
+                            .onSubmit(){
+                                mapselection = nil
+                                withAnimation{
+                                    placeredmode = false
+                                }
+                                Task { await searchplace()}
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                    withAnimation{
+                                        placeredmode = false
+                                    }
+                                }
+                            }
+                        
                         
                         Button(action: {
                             
-                            
+                            mapselection = nil
+                            withAnimation{
+                                placeredmode = false
+                            }
                             Task { await searchplace()}
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                withAnimation{
+                                    placeredmode = false
+                                }
+                            }
                         }, label: {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.black)
@@ -359,6 +397,7 @@ struct ContentView: View{
                             
                         })
                         .offset(x:105,y:0)
+                        
                     }
                     else{
                         Text("")
@@ -374,15 +413,77 @@ struct ContentView: View{
                  
                     
                 }
+                if searchmode == true && Destinationlocation.isEmpty == false {
+                    Button(action:{
+                        withAnimation{
+                        mapselection = nil
+                        
+                            placeredmode = false
+                           searchText = ""
+                        }
+                        if locationbuttonpressed == true{
+                            redmode = true
+                        }
+                        Destinationlocation.removeAll()
+                        Task{
+                            do{
+                              
+                                    
+                                    
+                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                    weatherfound = true
+                                    
+                                
+                                
+                                
+                            }
+                            catch{
+                                print("error occured")
+                            }
+                            
+                        }
+                
+                    },label:{
+                        Image(systemName: "bookmark.slash.fill")
+                            .foregroundColor(.white)
+                            .frame(width:55,height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(placeredmode ? .red : .black))
+                            .shadow(radius: 20)
+                        
+                    })
+                }
                 Spacer()
              
                 Button(action:{
-                    
+                    if Destinationlocation.isEmpty == false && placeredmode == true{
+                        let placemark = Destinationlocation[0].placemark
+                        Task{
+                           
+                            do{
+                               
+                                    if tapped == false{
+                                        weather = try await weathermanager.getWeather(loc: placemark.coordinate )
+                                        weatherfound = true
+                                    }
+                                    else{
+                                        weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                        weatherfound = true
+                                    }
+                                
+                                
+                            }
+                            catch{
+                                print("error occured")
+                            }
+                            
+                        }
+                    }
                     Task{
+                       
                         do{
                             if mapselection == nil{
                                 if tapped == false{
-                                    weather = try await weathermanager.getWeather(loc: locationViewer.currentcoordinate)
+                                    weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
                                     weatherfound = true
                                 }
                                 else{
@@ -399,9 +500,10 @@ struct ContentView: View{
                     }
                     
                     shownewscreen.toggle()
-                    redmode = true
-                    
-                    
+                    if locationbuttonpressed == true && searchmode == true {
+                        redmode = true
+                        
+                    }
                     
                 },label:{
                     
@@ -414,7 +516,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -427,7 +529,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -439,7 +541,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -452,7 +554,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -465,7 +567,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -478,7 +580,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -491,7 +593,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.7))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -505,20 +607,20 @@ struct ContentView: View{
                                     .fontWidth(.expanded)
                                     .font(.footnote)
                                 
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.7))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
                             
-                        case "mist":
+                        case "mist","haze":
                             HStack{
                                 Image(systemName: "cloud.fog.fill")
                                     .foregroundStyle(.gray,.brown)
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.7))
                             }
                             .frame(width:190, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -530,7 +632,7 @@ struct ContentView: View{
                                 Text(weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
-                                    .foregroundStyle(.black.opacity(0.7))
+                                    .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.7))
                             }
                                 .frame(width:190, height: 55)
                                 .background(RoundedRectangle(cornerRadius: 10).fill(.white))
@@ -550,11 +652,7 @@ struct ContentView: View{
                     
                     if weather != nil{
                         newscreen(weather: weather!)
-                            .presentationDetents([
-                                .height(100),
-                                .fraction(0.2),
-                                .medium,
-                                .large])
+                            
                     }
                     
                 }
@@ -568,13 +666,13 @@ struct ContentView: View{
                         tapped = false
                         Task{
                             do{
-                                if mapselection == nil{
+                                
                                     weather = try await weathermanager.getWeather(loc: locationViewer.currentcoordinate)
                                     weatherfound = true
                                     
                                     
                                     
-                                }
+                                
                                 
                             }
                             catch{
@@ -584,16 +682,19 @@ struct ContentView: View{
                         }
                     }
                     if searchmode == false{
+                        mapselection = nil
                        redmode = false
-                        placeredmode = false
+                        withAnimation{
+                            placeredmode = false
+                        }
                         tapped = true
                         
                         Task{
                             do{
-                                if mapselection == nil{
+                                
                                     weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
                                     weatherfound = true
-                                }
+                                
                                 
                             }
                             catch{
@@ -602,6 +703,14 @@ struct ContentView: View{
                             
                         }
                         
+                    }
+                    else{
+                        if locationbuttonpressed == true {
+                            redmode = true
+                        }
+                        withAnimation{
+                            placeredmode = false
+                        }
                     }
                     
                 }, label:{
@@ -663,6 +772,7 @@ struct ContentView: View{
              
             }
             .padding(.horizontal)
+            .padding(.top,10)
         
        
             
@@ -813,6 +923,33 @@ struct ContentView: View{
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 100, height: 100)
                         .offset(y:-10)
+                        .onSubmit{
+                            if analyzed == false{
+                                if Double(amount) ?? 13 > 46 {
+                                    amount = "46"
+                                }
+                                if Double(amount) ?? 13 == 0 {
+                                    amount = "100"
+                                }
+
+                                
+                                
+                                Loading = true
+                                Task {
+                                    do {
+                                        try await fetchDataFromServer()
+                                        showanalytics.toggle()
+                                        Loading = false
+                                    } catch {
+                                        print("Error fetching data from server: \(error)")
+                                    }
+                                }
+                                
+                            }
+                            else{
+                                showanalytics.toggle()
+                            }
+                        }
                     
                 }
                     Button(action:{
@@ -820,6 +957,11 @@ struct ContentView: View{
                             if Double(amount) ?? 13 > 46 {
                                 amount = "46"
                             }
+                            if Double(amount) ?? 13 == 0 {
+                                amount = "100"
+                            }
+
+                            
                             
                             Loading = true
                             Task {
@@ -1087,12 +1229,20 @@ struct ContentView: View{
                         
                 })
             }
+            .padding(10)
             .offset(x:20)
                 
         }
-        .onSubmit(of: .text){
-            Task { await searchplace()}
+        .mapControls{
+         
+                
+            MapScaleView()
+           
+            
         }
+        
+        
+       
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
         
@@ -1134,12 +1284,12 @@ struct ContentView: View{
          
             
         })
-       
-    
         .onChange(of:mapselection,{oldValue, newValue in
             let placemark = mapselection?.placemark
             redmode = false
-            placeredmode = true
+            withAnimation{
+                placeredmode = true
+            }
             
             if popupshowedbefore == false{
                 if placemark != nil{
@@ -1251,7 +1401,7 @@ struct AnalyticsView: View {
                                         tablecoord = convertStringToCLLocationCoordinate(coord)!
                                         tablemarkeron = true
                                         showanalytics = false
-                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 5000,longitudinalMeters: 5000))
                                        
                                    
                                     
@@ -1302,7 +1452,7 @@ struct AnalyticsView: View {
                                         tablecoord = convertStringToCLLocationCoordinate(coord)!
                                         tablemarkeron = true
                                         showanalytics = false
-                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 5000,longitudinalMeters: 5000))
                                    
                                     
                                 }
@@ -1348,7 +1498,7 @@ struct AnalyticsView: View {
                                         tablecoord = convertStringToCLLocationCoordinate(coord)!
                                         tablemarkeron = true
                                         showanalytics = false
-                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 5000,longitudinalMeters: 5000))
                                    
                                     
                                 }
@@ -1396,7 +1546,7 @@ struct AnalyticsView: View {
                                         tablecoord = convertStringToCLLocationCoordinate(coord)!
                                         tablemarkeron = true
                                         showanalytics = false
-                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                                    cameraposition = .region (MKCoordinateRegion(center: tablecoord,latitudinalMeters: 5000,longitudinalMeters: 5000))
                                    
                                     
                                 }
@@ -1463,6 +1613,7 @@ struct newscreen:View{
             HStack(alignment:.top){
             Spacer()
                 VStack{
+                    Spacer()
                     Text(weather.name)
                         .bold()
                         .font(.largeTitle)
@@ -1481,21 +1632,29 @@ struct newscreen:View{
                         .bold()
                         .italic()
                         .font(.caption)
+                    Spacer()
                 }
                 
                 Spacer()
                 VStack{
+                    Spacer()
                     Text("\(String(format:"%.1f",Double(weather.main.temp-273.15)))°C")
                         .fontWidth(.expanded)
                         .bold()
                         .font(.system(size: 33))
+                    Text("-Feelslike \(String(format:"%.1f",Double(weather.main.feelsLike-273.15)))°C-")
+                        .fontWidth(.expanded)
+                        .bold()
+                        .font(.caption2)
                     Text("Humidity:\(String(format:"%.0f",Double(weather.main.humidity)))%")
                         .fontWidth(.expanded)
                         .bold()
                     Text("Wind Speed:\(String(format:"%.1f",Double(weather.wind.speed)))m/s")
                         .fontWidth(.expanded)
                         .bold()
+                    Spacer()
                 }
+                
                 Spacer()
             }
             
@@ -1508,8 +1667,8 @@ struct newscreen:View{
                }
         
         .frame(
-              width: 520,
-              height:120
+              width: 525,
+              height:155
               
             )
     }

@@ -71,6 +71,21 @@ struct RegisterView: View {
                         .shadow(radius:5)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 305, height: 100)
+                        .onSubmit{
+                            if password != "" {
+                                Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
+                                    if let error = error {
+                                        errormessage.toggle()
+                                    }
+                                    if let authResult = authResult{
+                                        withAnimation{
+                                            userid = authResult.user.uid
+                                        }
+                                    }
+                                    print(userid)
+                                }
+                            }
+                        }
                     Image(systemName: "person.text.rectangle.fill")
                         .offset(x:115,y:0)
                 }
@@ -90,6 +105,19 @@ struct RegisterView: View {
                         .shadow(radius:5)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 305, height: 100)
+                        .onSubmit{
+                            Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
+                                if let error = error {
+                                    errormessage.toggle()
+                                }
+                                if let authResult = authResult{
+                                    withAnimation{
+                                        userid = authResult.user.uid
+                                    }
+                                }
+                                print(userid)
+                            }
+                        }
                     Image(systemName: "lock.fill")
                         .offset(x:115,y:0)
                 }
