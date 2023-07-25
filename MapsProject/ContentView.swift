@@ -454,7 +454,7 @@ struct ContentView: View{
                     })
                 }
                 Spacer()
-             
+            
                 Button(action:{
                     if placeredmode == true{
                         let placemark = Destinationlocation[0].placemark
@@ -615,7 +615,7 @@ struct ContentView: View{
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
                             
-                        case "mist","haze":
+                        case "mist","haze","fog":
                             HStack{
                                 Image(systemName: "cloud.fog.fill")
                                     .foregroundStyle(.gray,.brown)
