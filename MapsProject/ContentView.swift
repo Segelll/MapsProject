@@ -272,14 +272,14 @@ struct ContentView: View{
                 })
                 
                 .popover(isPresented: $showdate){
-                    Text("\(Date().formatted(.dateTime.day().month().hour().minute().second()))")
+                    Text("\(Date().formatted(.dateTime.day().month().year().hour().minute().second()))")
                         .fontWidth(.expanded)
                         .bold()
                         .italic()
                         .fontWidth(.expanded)
                         .font(.footnote)
                         .foregroundStyle(.black)
-                        .frame(width:170, height: 55)
+                        .frame(width:200, height: 55)
                        
                         .shadow(radius: 20)
                 }
@@ -418,22 +418,23 @@ struct ContentView: View{
                         withAnimation{
                         mapselection = nil
                         
-                            placeredmode = false
+                        placeredmode = false
                            searchText = ""
                         }
+                        placeredmode = false
                         if locationbuttonpressed == true{
                             redmode = true
                         }
                         Destinationlocation.removeAll()
                         Task{
+                            
                             do{
-                              
+                               
+                                    
+                                        weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
+                                        weatherfound = true
                                     
                                     
-                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
-                                    weatherfound = true
-                                    
-                                
                                 
                                 
                             }
@@ -455,20 +456,19 @@ struct ContentView: View{
                 Spacer()
              
                 Button(action:{
-                    if Destinationlocation.isEmpty == false && placeredmode == true{
+                    if placeredmode == true{
                         let placemark = Destinationlocation[0].placemark
                         Task{
                            
                             do{
                                
-                                    if tapped == false{
+                                    
                                         weather = try await weathermanager.getWeather(loc: placemark.coordinate )
                                         weatherfound = true
-                                    }
-                                    else{
-                                        weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
-                                        weatherfound = true
-                                    }
+                                    
+                                    
+                                       
+                                    
                                 
                                 
                             }
@@ -478,29 +478,31 @@ struct ContentView: View{
                             
                         }
                     }
-                    Task{
-                       
-                        do{
-                            if mapselection == nil{
-                                if tapped == false{
-                                    weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
-                                    weatherfound = true
+                    else{
+                        Task{
+                            
+                            do{
+                                if mapselection == nil{
+                                    if tapped == false{
+                                        weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
+                                        weatherfound = true
+                                    }
+                                    else{
+                                        weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                        weatherfound = true
+                                    }
                                 }
-                                else{
-                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
-                                    weatherfound = true
-                                }
+                                
+                            }
+                            catch{
+                                print("error occured")
                             }
                             
                         }
-                        catch{
-                            print("error occured")
-                        }
-                        
                     }
                     
                     shownewscreen.toggle()
-                    if locationbuttonpressed == true && searchmode == true {
+                    if locationbuttonpressed == true && searchmode == true && placeredmode == false {
                         redmode = true
                         
                     }
