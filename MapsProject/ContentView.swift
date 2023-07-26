@@ -903,6 +903,9 @@ struct ContentView: View{
                         regionarea = regionArea(locations: polygonviewer.polycoordinates)
                         
                     }
+                    tablemarkeron = false
+                    tablecontent = []
+                    analyzed = false
                   
                 },label:{
                     Image(systemName: "scope")
@@ -983,7 +986,7 @@ struct ContentView: View{
                       
                         
                     },label:{
-                        if poly == 2 {
+                        if poly > 1 {
                             if Loading == false {
                                 
                                 
@@ -1007,7 +1010,7 @@ struct ContentView: View{
                         
                     })
                     .fullScreenCover(isPresented: $showanalytics){
-                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername)
+                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername,poly:$poly)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     }
                     
@@ -1087,11 +1090,11 @@ struct ContentView: View{
                                 total += firstD
                                 
                             }
-                            if poly == 1 {
+                            
                                 tablemarkeron = false
                                 tablecontent = []
                                 analyzed = false
-                            }
+                            
                             
                             
                             
@@ -1335,9 +1338,10 @@ struct AnalyticsView: View {
     @Binding var tablemarkeron : Bool
     @Binding var markercolor : Color
     @Binding var markername : Double
+    @Binding var poly : Int
     var body: some View {
         HStack{
-        Text("2 point Analytics;")
+            Text(poly > 2 ? "Multipoint Analytics" : " Segmented Analytics;")
         
             .fontWidth(.expanded)
             .font(.title)
@@ -1793,8 +1797,6 @@ struct ResponseBody2 : Decodable{
   
 }
     
-
-
 struct ResponseBody: Decodable {
     var coord: CoordinatesResponse
     var weather: [WeatherResponse]
@@ -1834,6 +1836,7 @@ extension ResponseBody.MainResponse {
     var tempMin: Double { return temp_min }
     var tempMax: Double { return temp_max }
 }
+
 // MARK: extension
 extension ContentView{
     func fetchDataFromServer() async throws {
@@ -1842,16 +1845,39 @@ extension ContentView{
         let incrementlat = (polygonviewer.polycoordinates[1].latitude - polygonviewer.polycoordinates[0].latitude) / (Double(amount) ?? 13)
         let incrementlong = (polygonviewer.polycoordinates[1].longitude - polygonviewer.polycoordinates[0].longitude) / (Double(amount) ?? 13)
         analyzed = true
-        for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
-            let location = CLLocationCoordinate2D(latitude: lat, longitude: long)
+        if poly < 3 {
+            for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
+                let location = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                
+                do {
+                    let weatherData = try await weathermanager.getWeather(loc: location)
+                    let elevationData = try await elevationmanager.getElevation(loc: location)
+                    
+                    tablecontent.append(Analytics(
+                        lat: Double(String(format: "%.3f", lat))!,
+                        lng: Double(String(format: "%.3f", long))!,
+                        temp: (weatherData.main.temp - 273.15),
+                        elev: elevationData.elevation[0],
+                        hum: weatherData.main.humidity,
+                        wind: weatherData.wind.speed)
+                    )
+                } catch {
+                    print("error occurred")
+                }
+            }
+        }
+    
+    else {
+        for coordinate in polygonviewer.polycoordinates{
+          
             
             do {
-                let weatherData = try await weathermanager.getWeather(loc: location)
-                let elevationData = try await elevationmanager.getElevation(loc: location)
+                let weatherData = try await weathermanager.getWeather(loc: coordinate)
+                let elevationData = try await elevationmanager.getElevation(loc: coordinate)
                 
                 tablecontent.append(Analytics(
-                    lat: Double(String(format: "%.3f", lat))!,
-                    lng: Double(String(format: "%.3f", long))!,
+                    lat: Double(String(format: "%.3f", coordinate.latitude))!,
+                    lng: Double(String(format: "%.3f", coordinate.longitude))!,
                     temp: (weatherData.main.temp - 273.15),
                     elev: elevationData.elevation[0],
                     hum: weatherData.main.humidity,
@@ -1862,6 +1888,7 @@ extension ContentView{
             }
         }
     }
+}
     func radians(degrees: Double) -> Double {
         return degrees * .pi / 180
     }
