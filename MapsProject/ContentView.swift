@@ -62,6 +62,7 @@ struct ContentView: View{
     @State var markername : Double = 0
     @State var analyzed = false
     @State var showdate = false
+    @State var dateString : String?
     var body :some View{
         
         
@@ -330,6 +331,11 @@ struct ContentView: View{
                             do{
                                 weather = try await weathermanager.getWeather(loc: locationViewer.currentcoordinate)
                                 weatherfound = true
+                                let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                   let dateFormatter = DateFormatter()
+                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                               dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                dateString = dateFormatter.string(from: dateInTimeZone!)
                             }catch{
                                 print("error")
                             }
@@ -433,6 +439,11 @@ struct ContentView: View{
                                     
                                         weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
                                         weatherfound = true
+                                let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                   let dateFormatter = DateFormatter()
+                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                               dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                dateString = dateFormatter.string(from: dateInTimeZone!)
                                     
                                     
                                 
@@ -466,7 +477,11 @@ struct ContentView: View{
                                         weather = try await weathermanager.getWeather(loc: placemark.coordinate )
                                         weatherfound = true
                                     
-                                    
+                                let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                   let dateFormatter = DateFormatter()
+                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                               dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                dateString = dateFormatter.string(from: dateInTimeZone!)
                                        
                                     
                                 
@@ -486,10 +501,21 @@ struct ContentView: View{
                                     if tapped == false{
                                         weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
                                         weatherfound = true
+                                        let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                           let dateFormatter = DateFormatter()
+                                           dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                       dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                        dateString = dateFormatter.string(from: dateInTimeZone!)
                                     }
                                     else{
                                         weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
                                         weatherfound = true
+                                        let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                           let dateFormatter = DateFormatter()
+                                           dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                       dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                        dateString = dateFormatter.string(from: dateInTimeZone!)
+
                                     }
                                 }
                                 
@@ -500,6 +526,8 @@ struct ContentView: View{
                             
                         }
                     }
+                   
+                  
                     
                     shownewscreen.toggle()
                     if locationbuttonpressed == true && searchmode == true && placeredmode == false {
@@ -653,7 +681,7 @@ struct ContentView: View{
                 .popover(isPresented: $shownewscreen ){
                     
                     if weather != nil{
-                        newscreen(weather: weather!)
+                        newscreen(weather: weather!,dateString:$dateString)
                             
                     }
                     
@@ -672,7 +700,11 @@ struct ContentView: View{
                                     weather = try await weathermanager.getWeather(loc: locationViewer.currentcoordinate)
                                     weatherfound = true
                                     
-                                    
+                                let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                   let dateFormatter = DateFormatter()
+                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                               dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                dateString = dateFormatter.string(from: dateInTimeZone!)
                                     
                                 
                                 
@@ -697,7 +729,11 @@ struct ContentView: View{
                                     weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
                                     weatherfound = true
                                 
-                                
+                                let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                   let dateFormatter = DateFormatter()
+                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                               dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                dateString = dateFormatter.string(from: dateInTimeZone!)
                             }
                             catch{
                                 print("error occured")
@@ -1264,6 +1300,11 @@ struct ContentView: View{
                             
                             weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
                             weatherfound = true
+                            let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                               let dateFormatter = DateFormatter()
+                               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                           dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                            dateString = dateFormatter.string(from: dateInTimeZone!)
                             
                         }
                         
@@ -1302,6 +1343,11 @@ struct ContentView: View{
                         do{
                             weather = try await weathermanager.getWeather(loc:placemark!.coordinate  )
                             weatherfound = true
+                            let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                               let dateFormatter = DateFormatter()
+                               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                           dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                            dateString = dateFormatter.string(from: dateInTimeZone!)
                         }
                         catch{
                             print("error occured")
@@ -1611,6 +1657,7 @@ struct SelectionScreen:View{
 struct newscreen:View{
     var weather:ResponseBody
     var elevationmanager = ElevationManager()
+    @Binding var dateString : String?
     @State var elevation : ResponseBody2?
    
     var body:some View{
@@ -1633,11 +1680,11 @@ struct newscreen:View{
                         .font(.footnote)
                         .fontWidth(.expanded)
                     
-                    Text("\(Date().formatted(.dateTime.day().month().hour().minute()))")
-                        .fontWidth(.expanded)
-                        .bold()
-                        .italic()
-                        .font(.caption)
+                    Text(dateString ?? "")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption)
+                    
                     Spacer()
                 }
                 
@@ -1651,7 +1698,7 @@ struct newscreen:View{
                     Text("-Feelslike \(String(format:"%.1f",Double(weather.main.feelsLike-273.15)))°C-")
                         .fontWidth(.expanded)
                         .bold()
-                        .font(.caption2)
+                        .font(.footnote)
                     Text("Humidity:\(String(format:"%.0f",Double(weather.main.humidity)))%")
                         .fontWidth(.expanded)
                         .bold()
@@ -1797,12 +1844,15 @@ struct ResponseBody2 : Decodable{
   
 }
     
+
+
 struct ResponseBody: Decodable {
     var coord: CoordinatesResponse
     var weather: [WeatherResponse]
     var main: MainResponse
     var name: String
     var wind: WindResponse
+    var timezone: Int
 
     struct CoordinatesResponse: Decodable {
         var lon: Double
@@ -1810,35 +1860,42 @@ struct ResponseBody: Decodable {
     }
 
     struct WeatherResponse: Decodable {
-        var id: Double
-        var main: String
+     
         var description: String
-        var icon: String
     }
 
     struct MainResponse: Decodable {
         var temp: Double
         var feels_like: Double
-        var temp_min: Double
-        var temp_max: Double
-        var pressure: Double
+   
         var humidity: Double
+    
     }
     
     struct WindResponse: Decodable {
         var speed: Double
-        var deg: Double
+       
     }
 }
 
+// Update the computed properties for MainResponse
 extension ResponseBody.MainResponse {
     var feelsLike: Double { return feels_like }
-    var tempMin: Double { return temp_min }
-    var tempMax: Double { return temp_max }
-}
 
+}
 // MARK: extension
 extension ContentView{
+    
+    func getCurrentDateInTimeZone(secondsFromGMT: Int) -> Date? {
+        let timeZone = TimeZone(secondsFromGMT: secondsFromGMT)
+        var calendar = Calendar.current
+        calendar.timeZone = timeZone ?? TimeZone.current // Use the specified time zone, or fallback to the current system time zone
+        
+        let currentDate = Date()
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: currentDate)
+        
+        return calendar.date(from: components)
+    }
     func fetchDataFromServer() async throws {
         
         
