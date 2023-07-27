@@ -610,7 +610,7 @@ struct ContentView: View{
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
                             
-                        case "rain","light rain","moderate rain":
+                        case "rain","light rain","moderate rain","light intensity shower rain","light intensity drizzle","light intensity drizzle rain":
                             HStack{
                                 Image(systemName: "cloud.sun.rain.fill")
                                     .foregroundStyle(.gray,.yellow,.blue)
