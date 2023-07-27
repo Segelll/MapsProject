@@ -63,6 +63,8 @@ struct ContentView: View{
     @State var analyzed = false
     @State var showdate = false
     @State var dateString : String?
+    @State var route : [MKRoute] = []
+    @State var routemode : Bool = false
     var body :some View{
         
         
@@ -214,13 +216,24 @@ struct ContentView: View{
                     
                     
                 }
+                if routemode == true && poly > (Int(a) ?? 2)-1{
+                    
+                    
+                        ForEach(Range(0...route.count-1)){ i in
+                            MapPolyline(route[i].polyline)
+                                .stroke(.indigo, lineWidth:4)
+                          
+                        
+                    }
+                }
                 
                 
-                
-                if polylinemode == true || poly == 2{
-                    if poly > (Int(a) ?? 2)-1 {
-                        MapPolyline(MKPolyline(coordinates: polygonviewer.polycoordinates, count: poly))
-                            .stroke(satellitebutton ? .white : .black, lineWidth: 3)
+                else{
+                    if polylinemode == true || poly == 2{
+                        if poly > (Int(a) ?? 2)-1 {
+                            MapPolyline(MKPolyline(coordinates: polygonviewer.polycoordinates, count: poly))
+                                .stroke(satellitebutton ? .white : .black, lineWidth: 3)
+                        }
                     }
                 }
             }
@@ -860,10 +873,33 @@ struct ContentView: View{
                 })
                 .offset(y:-10)
                
+                Button(action:{
+                    
+                    if poly > 1 {
+                         getroute()
+                            
+                        
+                    }
 
+                    
+                }, label: {
+                    if polylinemode == true{
+                        Text("EXP.")
+                            .foregroundColor(.white)
+                            .frame(width:55,height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                            .shadow(radius: 20)
+                    }else{
+                        Text("")
+                    }
+                    
+                })
+                .offset(y:-10)
               
                 Button(action:{
-                    polylinemode.toggle()
+                    withAnimation{
+                        polylinemode.toggle()
+                    }
                 },label:{
                     if polylinemode == false{
                         Image(systemName: "point.3.filled.connected.trianglepath.dotted")
@@ -936,6 +972,9 @@ struct ContentView: View{
                     tablemarkeron = false
                     tablecontent = []
                     analyzed = false
+                    if routemode == true{
+                        getroute()
+                    }
                   
                 },label:{
                     Image(systemName: "scope")
@@ -987,6 +1026,7 @@ struct ContentView: View{
                         }
                     
                 }
+              
                     Button(action:{
                         if analyzed == false{
                             if Double(amount) ?? 13 > 46 {
@@ -1664,7 +1704,7 @@ struct newscreen:View{
                 VStack{
                     Spacer()
                 
-                       Text(weather.sys.country)
+                       Text(weather.sys.country ?? "(Not Applicable)")
                             .bold()
                             .font(.headline)
                             .fontWidth(.expanded)
@@ -1759,14 +1799,6 @@ struct newscreen:View{
                     HStack{
                         Image(systemName: "cloud.fill")
                         Text("\(String(weather.clouds.all))%")
-                            .fontWidth(.expanded)
-                            .bold()
-                            .font(.caption2)
-                    }
-                        .padding(1)
-                    HStack{
-                        Image(systemName: "eye.fill")
-                        Text("\(String(weather.visibility))m")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.caption2)
@@ -1974,14 +2006,13 @@ struct ResponseBody: Decodable {
     let wind: WindResponse
     let timezone: Int
     let sys: SysResponse
-    let visibility: Int
     var clouds: CloudsResponse
     
     struct CloudsResponse : Decodable{
         var all: Int
     }
     struct SysResponse : Decodable{
-        let country: String
+        let country: String?
         let sunrise: Int
         let sunset: Int
     }
@@ -2023,7 +2054,24 @@ extension ResponseBody.MainResponse {
 }
 // MARK: extension
 extension ContentView{
-    
+    func getroute(){
+           
+           
+        if poly > 1 {
+        for i in 1...poly-1{
+            Task{
+                
+                    let request = MKDirections.Request()
+                    request.source = MKMapItem(placemark: .init(coordinate: polygonviewer.polycoordinates[i-1]))
+                    request.destination = MKMapItem(placemark: .init(coordinate: polygonviewer.polycoordinates[i]))
+                   // request.transportType = MKDirectionsTransportType(arrayLiteral: .walking)
+                    let result = try? await MKDirections(request: request).calculate()
+                    route.append((result?.routes.first)!)
+                    routemode = true
+                }
+            }
+        }
+       }
     func getCurrentDateInTimeZone(secondsFromGMT: Int) -> Date? {
         let timeZone = TimeZone(secondsFromGMT: secondsFromGMT)
         var calendar = Calendar.current
