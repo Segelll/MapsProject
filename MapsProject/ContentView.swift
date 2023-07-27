@@ -424,9 +424,10 @@ struct ContentView: View{
                         withAnimation{
                         mapselection = nil
                         
-                        placeredmode = false
+                        
                            searchText = ""
                         }
+                        
                         placeredmode = false
                         if locationbuttonpressed == true{
                             redmode = true
@@ -1718,7 +1719,7 @@ struct newscreen:View{
                     Spacer()
                 }
                 Spacer()
-                VStack{
+                VStack(alignment: .leading){
                     Spacer()
                     HStack{
                         Image(systemName: "humidity.fill")
@@ -1728,7 +1729,7 @@ struct newscreen:View{
                             .font(.caption2)
                             
                     }
-                    .padding(2)
+                    .padding(1)
                     HStack{
                         Image(systemName: "wind")
                         Text("\(String(format:"%.1f",weather.wind.speed))m/s")
@@ -1737,7 +1738,7 @@ struct newscreen:View{
                             .font(.caption2)
                             
                     }
-                    .padding(2)
+                    .padding(1)
                     HStack{
                         Image(systemName: "sunrise.fill")
                         Text(String(convertsun(sunvalue: weather.sys.sunrise, sunzone: weather.timezone)))
@@ -1746,7 +1747,7 @@ struct newscreen:View{
                             .font(.caption2)
                            
                     }
-                        .padding(2)
+                        .padding(1)
                     HStack{
                         Image(systemName: "sunset.fill")
                         Text(String(convertsun(sunvalue: weather.sys.sunset, sunzone: weather.timezone)))
@@ -1754,9 +1755,26 @@ struct newscreen:View{
                             .bold()
                             .font(.caption2)
                     }
-                        .padding(2)
+                        .padding(1)
+                    HStack{
+                        Image(systemName: "cloud.fill")
+                        Text("\(String(weather.clouds.all))%")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
+                        .padding(1)
+                    HStack{
+                        Image(systemName: "eye.fill")
+                        Text("\(String(weather.visibility))m")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
+                        .padding(1)
                     Spacer()
                 }
+                
              
                   
                 Spacer()
@@ -1790,7 +1808,7 @@ struct newscreen:View{
         
         .frame(
               width: 615,
-              height:165
+              height:185
               
             )
     }
@@ -1956,7 +1974,12 @@ struct ResponseBody: Decodable {
     let wind: WindResponse
     let timezone: Int
     let sys: SysResponse
+    let visibility: Int
+    var clouds: CloudsResponse
     
+    struct CloudsResponse : Decodable{
+        var all: Int
+    }
     struct SysResponse : Decodable{
         let country: String
         let sunrise: Int
