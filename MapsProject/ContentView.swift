@@ -1780,6 +1780,22 @@ struct newscreen:View{
                     }
                     .padding(1)
                     HStack{
+                        Image(systemName: "cloud.fill")
+                        Text("\(String(weather.clouds.all))%")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
+                        .padding(1)
+                    HStack{
+                        Image(systemName: "umbrella.fill")
+                        Text("\(String(weather.rain?.oneHour ?? 0))mm")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
+                        .padding(1)
+                    HStack{
                         Image(systemName: "sunrise.fill")
                         Text(String(convertsun(sunvalue: weather.sys.sunrise, sunzone: weather.timezone)))
                             .fontWidth(.expanded)
@@ -1796,14 +1812,8 @@ struct newscreen:View{
                             .font(.caption2)
                     }
                         .padding(1)
-                    HStack{
-                        Image(systemName: "cloud.fill")
-                        Text("\(String(weather.clouds.all))%")
-                            .fontWidth(.expanded)
-                            .bold()
-                            .font(.caption2)
-                    }
-                        .padding(1)
+                 
+                   
                     Spacer()
                 }
                 
@@ -1840,7 +1850,7 @@ struct newscreen:View{
         
         .frame(
               width: 615,
-              height:185
+              height:190
               
             )
     }
@@ -2006,8 +2016,15 @@ struct ResponseBody: Decodable {
     let wind: WindResponse
     let timezone: Int
     let sys: SysResponse
-    var clouds: CloudsResponse
-    
+    let clouds: CloudsResponse
+    let rain : RainResponse?
+    struct RainResponse: Decodable {
+        let oneHour: Double
+
+        enum CodingKeys: String, CodingKey {
+            case oneHour = "1h"
+        }
+    }
     struct CloudsResponse : Decodable{
         var all: Int
     }
