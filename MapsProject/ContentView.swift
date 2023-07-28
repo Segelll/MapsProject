@@ -65,6 +65,7 @@ struct ContentView: View{
     @State var dateString : String?
     @State var route : [MKRoute?] = []
     @State var routemode : Bool = false
+    @State var routelength : Double = 0
     var body :some View{
         
         
@@ -1288,8 +1289,8 @@ struct ContentView: View{
                             }
                         }
                         if routemode == true{
-                            
-                            Text("Route Mode")
+                            let stringholder = selectkm ? String(format:"%.3f",(routelength ?? 0)/1000) + "km" : String(format:"%.0f",routelength ?? 0) + "m"
+                            Text("Route Length:\(stringholder)")
                                 .fontWidth(.expanded)
                                 .font(.footnote)
                                 .foregroundStyle(.black)
@@ -2103,8 +2104,9 @@ extension ResponseBody.MainResponse {
 extension ContentView{
     func getroute(){
            
-           
+           routelength = 0
         if poly > 1 {
+            
         for i in 1...poly-1{
             Task{
                 
@@ -2114,8 +2116,9 @@ extension ContentView{
                    // request.transportType = MKDirectionsTransportType(arrayLiteral: .walking)
                     let result = try? await MKDirections(request: request).calculate()
                     route.append(result?.routes.first)
-                
-                
+                if result?.routes.first?.distance != nil{
+                    routelength += (result?.routes.first?.distance)!
+                }
                     
                 }
             
