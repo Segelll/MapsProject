@@ -63,7 +63,7 @@ struct ContentView: View{
     @State var analyzed = false
     @State var showdate = false
     @State var dateString : String?
-    @State var route : [MKRoute] = []
+    @State var route : [MKRoute?] = []
     @State var routemode : Bool = false
     var body :some View{
         
@@ -127,19 +127,25 @@ struct ContentView: View{
                            coordinate: tablecoord)
                         .tint(markercolor)
             }
+            
             if poly > 0 {
-                ForEach(Range(0...poly-1)){ i in
+              
+              
+                    ForEach(Range(0...poly-1)){ i in
+                        
+                        if i > 0 && routemode == false{
+                            
+                            let stringholder = selectkm ? "\(String(format: "%.3f", distance[i-1]/1000))km": "\(String(format: "%.3f", distance[i-1]))m"
+                            
+                            Annotation(stringholder, coordinate:midpoint[i-1]){}
+                            
+                            
+                            
+                            
+                            
+                        }
                     
-                    if i > 0{
-                        
-                        let stringholder = selectkm ? "\(String(format: "%.3f", distance[i-1]/1000))km": "\(String(format: "%.3f", distance[i-1]))m"
-                        Annotation(stringholder, coordinate:midpoint[i-1]){}
-                        
-                        
-                        
-                        
-                        
-                    }
+                
                     
                     
                     Annotation("",coordinate:polygonviewer.polycoordinates[i]){
@@ -178,7 +184,7 @@ struct ContentView: View{
                             
                             
                             
-                            if polylinemode == false && poly > 2 {
+                            if polylinemode == false && poly > 2 && routemode == false{
                                 
                                 
                                 Text("(\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°)")
@@ -204,7 +210,7 @@ struct ContentView: View{
                 }
                 
                 
-                if polylinemode == false && polyon == true{
+                if polylinemode == false && polyon == true && routemode == false{
                     
                     
                     let stringholder = selectkm ? "\(String(format: "%.3f", firstD/1000))km": "\(String(format: "%.3f", firstD))m"
@@ -216,20 +222,22 @@ struct ContentView: View{
                     
                     
                 }
-                if routemode == true && poly > (Int(a) ?? 2)-1{
+                if routemode == true && poly > (Int(a) ?? 2)-1 && route.count > 0{
                     
                     
                         ForEach(Range(0...route.count-1)){ i in
-                            MapPolyline(route[i].polyline)
-                                .stroke(.indigo, lineWidth:4)
+                            if route[i] != nil{
+                                MapPolyline(route[i]!.polyline)
+                                    .stroke(.indigo, lineWidth:4)
+                            }
                           
                         
                     }
                 }
                 
                 
-                else{
-                    if polylinemode == true || poly == 2{
+                if routemode == false {
+                    if polylinemode == true || poly == 2 {
                         if poly > (Int(a) ?? 2)-1 {
                             MapPolyline(MKPolyline(coordinates: polygonviewer.polycoordinates, count: poly))
                                 .stroke(satellitebutton ? .white : .black, lineWidth: 3)
@@ -239,7 +247,7 @@ struct ContentView: View{
             }
             if poly > (Int(a) ?? 3)-1 {
               
-                    if polylinemode == false{
+                    if polylinemode == false && routemode == false{
                         MapPolygon(coordinates: polygonviewer.polycoordinates)
                             .stroke(satellitebutton ? .white : .black, lineWidth: 2)
                             .foregroundStyle(satellitebutton ? .white.opacity(0.1) : .black.opacity(0.1))
@@ -873,42 +881,38 @@ struct ContentView: View{
                 })
                 .offset(y:-10)
                
-                Button(action:{
-                    
-                    if poly > 1 {
-                         getroute()
-                            
-                        
-                    }
-
-                    
-                }, label: {
-                    if polylinemode == true{
-                        Text("EXP.")
-                            .foregroundColor(.white)
-                            .frame(width:55,height: 55)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(.black))
-                            .shadow(radius: 20)
-                    }else{
-                        Text("")
-                    }
-                    
-                })
-                .offset(y:-10)
+       
+               
               
                 Button(action:{
                     withAnimation{
-                        polylinemode.toggle()
+                        if polylinemode == true {
+                            route = []
+                            getroute()
+                            routemode = true
+                            polylinemode = false
+                          
+                        }
+                        else{
+                            if routemode == true  {
+                                routemode = false
+                            }
+                            else{
+                                polylinemode = true
+                            }
+                        }
                     }
                 },label:{
                     if polylinemode == false{
-                        Image(systemName: "point.3.filled.connected.trianglepath.dotted")
+                       
+                        Image(systemName: routemode ? "flag.and.flag.filled.crossed" :"point.3.filled.connected.trianglepath.dotted")
                         
                             .foregroundStyle(.black,.green)
                         
                             .frame(width:55, height: 55)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .shadow(radius: 20)
+                            
                     }
                     else{
                         Image(systemName: "point.bottomleft.filled.forward.to.point.topright.scurvepath")
@@ -965,16 +969,20 @@ struct ContentView: View{
                         }
                         if poly > 1{
                             total += distance[poly-2]
+                           
                         }
                         regionarea = regionArea(locations: polygonviewer.polycoordinates)
                         
                     }
+                   
                     tablemarkeron = false
                     tablecontent = []
                     analyzed = false
                     if routemode == true{
+                        route = []
                         getroute()
                     }
+                
                   
                 },label:{
                     Image(systemName: "scope")
@@ -1092,7 +1100,7 @@ struct ContentView: View{
                     Button(action:{
                         withAnimation{
                             polygonviewer.deletelast()
-                         
+                            
                             if poly > 0{
                                 poly = poly-1
                                 
@@ -1106,8 +1114,10 @@ struct ContentView: View{
                                 total -= distance[poly-1]
                                 
                                 
+                                
                                 distance.removeLast()
                             }
+                            
                             
                             if midpoint.count > 0 {
                                 midpoint.removeLast()
@@ -1116,6 +1126,10 @@ struct ContentView: View{
                             if poly > 2{
                                 
                                 angle.removeLast()
+                            }
+                            if route.count > 0 {
+                                route = []
+                                getroute()
                             }
                             
                             
@@ -1144,7 +1158,7 @@ struct ContentView: View{
                             a = "99"
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
                                 
-                                    a = ""
+                                a = ""
                                 
                             }
                             if distance.count > 1 {
@@ -1161,9 +1175,9 @@ struct ContentView: View{
                                 
                             }
                             
-                                tablemarkeron = false
-                                tablecontent = []
-                                analyzed = false
+                            tablemarkeron = false
+                            tablecontent = []
+                            analyzed = false
                             
                             
                             
@@ -1189,6 +1203,8 @@ struct ContentView: View{
                             midpoint = []
                             distance = []
                             total = 0.0
+                     
+                            
                             polyon = false
                             a = ""
                             angle = []
@@ -1199,6 +1215,9 @@ struct ContentView: View{
                             tablemarkeron = false
                             tablecontent = []
                             analyzed = false
+                            
+                            route = []
+                        
                         }
                     }, label:{
                         Image(systemName: "trash.fill")
@@ -1213,7 +1232,7 @@ struct ContentView: View{
                     Button(action:{
                         showselectionscreen.toggle()
                     },label:{
-                        if polylinemode == false{
+                        if polylinemode == false && routemode == false{
                             
                             let stringholder = String(format:"%.3f",total) + "m"
                             let stringholderarea = String(format:"%.3f",regionarea) + "m2"
@@ -1244,7 +1263,7 @@ struct ContentView: View{
                                     .shadow(radius: 20)
                             }
                         }
-                        else{
+                        if polylinemode == true{
                             let stringholder = String(format:"%.3f",total - firstD) + "m"
                             let stringholderkm = String(format:"%.3f",(total-firstD)/1000) + "km"
                             if selectkm == true{
@@ -1267,6 +1286,17 @@ struct ContentView: View{
                                     .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                                     .shadow(radius: 20)
                             }
+                        }
+                        if routemode == true{
+                            
+                            Text("Route Mode")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.black)
+                            
+                                .frame(width:250, height: 55)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
                         }
                     })
                     .offset(y:-10)
@@ -2083,10 +2113,15 @@ extension ContentView{
                     request.destination = MKMapItem(placemark: .init(coordinate: polygonviewer.polycoordinates[i]))
                    // request.transportType = MKDirectionsTransportType(arrayLiteral: .walking)
                     let result = try? await MKDirections(request: request).calculate()
-                    route.append((result?.routes.first)!)
-                    routemode = true
+                    route.append(result?.routes.first)
+                
+                
+                    
                 }
+            
+            
             }
+         
         }
        }
     func getCurrentDateInTimeZone(secondsFromGMT: Int) -> Date? {
