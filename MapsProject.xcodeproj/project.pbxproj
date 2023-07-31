@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EC200E7A2A77990A00BB8E5B /* DetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC200E792A77990A00BB8E5B /* DetailsView.swift */; };
 		EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */ = {isa = PBXBuildFile; fileRef = EC52966F2A67D993000E03EB /* Authorization(View).swift */; };
 		EC5296722A67DC35000E03EB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5296712A67DC35000E03EB /* String.swift */; };
 		ECDF33E72A53E5E400545CEE /* MapsProjectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EC200E792A77990A00BB8E5B /* DetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsView.swift; sourceTree = "<group>"; };
 		EC52966F2A67D993000E03EB /* Authorization(View).swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Authorization(View).swift"; sourceTree = "<group>"; };
 		EC5296712A67DC35000E03EB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		ECDF33E32A53E5E400545CEE /* MapsProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapsProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -118,6 +120,7 @@
 				EC52966F2A67D993000E03EB /* Authorization(View).swift */,
 				ECEA74FB2A66837A000CF4E4 /* LoginView.swift */,
 				ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */,
+				EC200E792A77990A00BB8E5B /* DetailsView.swift */,
 				ECDF33E82A53E5E400545CEE /* ContentView.swift */,
 				ECDF33EA2A53E5E600545CEE /* Assets.xcassets */,
 				ECDF33EF2A53E5E600545CEE /* Item.swift */,
@@ -294,6 +297,7 @@
 				ECDF33F02A53E5E600545CEE /* Item.swift in Sources */,
 				EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */,
 				EC5296722A67DC35000E03EB /* String.swift in Sources */,
+				EC200E7A2A77990A00BB8E5B /* DetailsView.swift in Sources */,
 				ECEA74FC2A66837A000CF4E4 /* LoginView.swift in Sources */,
 				ECDF33E72A53E5E400545CEE /* MapsProjectApp.swift in Sources */,
 			);

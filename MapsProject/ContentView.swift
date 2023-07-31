@@ -697,7 +697,7 @@ struct ContentView: View{
                 .popover(isPresented: $shownewscreen ){
                     
                     if weather != nil{
-                        newscreen(weather: weather!,dateString:$dateString)
+                        newscreen(weather: weather!,dateString:$dateString,searchmode:$searchmode)
                             
                     }
                     
@@ -1489,22 +1489,23 @@ struct AnalyticsView: View {
             
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
-            Chart(tablecontent){ content in
-                
-                LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
-                         y: .value("second" , content.temp)
-                )
-                
-                .foregroundStyle(.red)
-               
+            
+                Chart(tablecontent){ content in
+                    
+                    LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
+                             y: .value("second" , content.temp)
+                    )
+                    
+                    .foregroundStyle(.red)
+                    
                     PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.temp)
                     )
                     .symbol(BasicChartSymbolShape.circle)
                     .foregroundStyle(.red)
-                   
+                }
             
-            }
+            
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
@@ -1722,10 +1723,14 @@ struct SelectionScreen:View{
 }
 // MARK: newscreen
 struct newscreen:View{
-    var weather:ResponseBody
+    @State var weather:ResponseBody
     var elevationmanager = ElevationManager()
     @Binding var dateString : String?
+    var weathermanager = WeatherManager()
+    @Binding var searchmode : Bool
     @State var elevation : ResponseBody2?
+    @State var hweather : ResponseHourly?
+    @State var showdetailsscreen : Bool = false
    
     var body:some View{
        
@@ -1740,12 +1745,31 @@ struct newscreen:View{
                             .font(.headline)
                             .fontWidth(.expanded)
                             .textCase(.uppercase)
-                 
-                    Text(weather.name)
-                        .bold()
-                        .font(.largeTitle)
-                        .fontWidth(.expanded)
-                        .textCase(.uppercase)
+                    Button(action:{
+                        Task{
+                            do{
+                                hweather =  try await weathermanager.gethourlyWeather(loc: CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
+                                showdetailsscreen.toggle()
+                                
+                            }
+                            catch{
+                                print("error")
+                            }
+                        }
+                            
+                    },label:{
+                        Text(weather.name)
+                            .bold()
+                            .font(.largeTitle)
+                            .fontWidth(.expanded)
+                            .textCase(.uppercase)
+                            .foregroundStyle(searchmode ? .red :.indigo)
+                        
+                    })
+                    .fullScreenCover(isPresented: $showdetailsscreen){
+                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation)
+                    }
+                    
                     Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
                         .bold()
                         .font(.subheadline)
@@ -1967,6 +1991,7 @@ class LocationViewer: NSObject, ObservableObject,CLLocationManagerDelegate{
     }
 }
 class WeatherManager{
+
     func getWeather(loc:CLLocationCoordinate2D) async throws->ResponseBody{
         let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
                 let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
@@ -1991,6 +2016,18 @@ class WeatherManager{
         let decoded = try JSONDecoder().decode(ResponseOptimized.self, from: data)
         return(decoded)
         
+    }
+    func gethourlyWeather(loc:CLLocationCoordinate2D) async throws->ResponseHourly{
+        let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
+                let urlString = "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            fatalError("Cannot get weather data")
+        }
+        let urlrequest = URLRequest(url: url)
+        let (data, response) = try await URLSession.shared.data(for: urlrequest)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching weather data") }
+        let decoded = try JSONDecoder().decode(ResponseHourly.self, from: data)
+        return(decoded)
     }
 }
 class ElevationManager{
@@ -2034,6 +2071,59 @@ struct ResponseOptimized : Decodable {
     struct MainOptimized : Decodable{
         let temp : Double
         let humidity : Int
+    }
+}
+struct ResponseHourly : Codable{
+        let list: [WeatherData]
+        let city: City
+    struct City: Codable {
+      
+        let population: Int
+    }
+
+    struct WeatherData: Codable {
+        let dt: Int
+        let main: MainWeatherData
+        let weather: [Weather]
+        let clouds: Clouds
+        let wind: Wind
+        let pop: Double
+        let sys: Sys
+        let rain: Rain?
+        let dt_txt: String
+    }
+    struct Rain: Codable {
+        let oneHour: Double
+
+        enum CodingKeys: String, CodingKey {
+            case oneHour = "1h"
+        }
+    }
+
+    struct MainWeatherData: Codable {
+        let temp: Double
+        let feels_like: Double
+        let temp_min: Double
+        let temp_max: Double
+        let humidity: Int
+    }
+
+    struct Weather: Codable {
+        let description: String
+    }
+
+    struct Clouds: Codable {
+        let all: Int
+    }
+
+    struct Wind: Codable {
+        let speed: Double
+        let deg: Int
+        let gust: Double
+    }
+
+    struct Sys: Codable {
+        let pod: String
     }
 }
 
