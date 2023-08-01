@@ -1730,6 +1730,7 @@ struct newscreen:View{
     @Binding var searchmode : Bool
     @State var elevation : ResponseBody2?
     @State var hweather : ResponseHourly?
+    @State var dweather : ResponseDaily?
     @State var showdetailsscreen : Bool = false
    
     var body:some View{
@@ -1749,13 +1750,17 @@ struct newscreen:View{
                         Task{
                             do{
                                 hweather =  try await weathermanager.gethourlyWeather(loc: CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
+                                
+                                dweather =  try await weathermanager.getdailyWeather(loc:CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
                                 showdetailsscreen.toggle()
                                 
                             }
                             catch{
                                 print("error")
                             }
+                            
                         }
+                      
                             
                     },label:{
                         Text(weather.name)
@@ -1767,7 +1772,7 @@ struct newscreen:View{
                         
                     })
                     .fullScreenCover(isPresented: $showdetailsscreen){
-                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation)
+                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather)
                     }
                     
                     Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
@@ -2029,6 +2034,18 @@ class WeatherManager{
         let decoded = try JSONDecoder().decode(ResponseHourly.self, from: data)
         return(decoded)
     }
+    func getdailyWeather(loc:CLLocationCoordinate2D) async throws->ResponseDaily{
+        let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
+        let urlString = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=\(loc.latitude)&lon=\(loc.longitude)&cnt=16&appid=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            fatalError("Cannot get weather data")
+        }
+        let urlrequest = URLRequest(url: url)
+        let (data, response) = try await URLSession.shared.data(for: urlrequest)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching weather data") }
+        let decoded = try JSONDecoder().decode(ResponseDaily.self, from: data)
+        return(decoded)
+    }
 }
 class ElevationManager{
     func getElevation(loc:CLLocationCoordinate2D)  async throws-> ResponseBody2{
@@ -2073,13 +2090,63 @@ struct ResponseOptimized : Decodable {
         let humidity : Int
     }
 }
+
+
+
+
+
+
+
+struct ResponseDaily: Codable {
+   
+    let list: [ListElement]
+    
+    
+    struct ListElement: Codable {
+        let dt : Int
+        let sunrise : Int
+        let sunset : Int
+        let temp: Temp
+        let feels_like: FeelsLike
+        let pressure: Int
+        let humidity: Int
+        let weather: [Weather]
+        let speed: Double
+        let deg: Int
+        let gust: Double
+        let clouds: Int
+        let pop: Double
+        let rain : Double?
+    }
+    
+    struct Weather: Codable {
+
+        let description: String
+     
+    }
+
+    struct Temp: Codable {
+        
+        let day: Double
+        let min: Double
+        let max: Double
+        let night: Double
+        let eve: Double
+        let morn: Double
+    }
+
+    struct FeelsLike: Codable {
+        let day: Double
+        let night: Double
+        let eve: Double
+        let morn: Double
+    }
+    
+    
+}
 struct ResponseHourly : Codable{
         let list: [WeatherData]
-        let city: City
-    struct City: Codable {
-      
-        let population: Int
-    }
+    
 
     struct WeatherData: Codable {
         let dt: Int
