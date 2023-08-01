@@ -146,8 +146,271 @@ struct DetailsView: View {
                             
                               
                             HStack{
-                                ForEach(Range(range1...range2)){ i in
+                                if a == 0 {
+                                    VStack{
+                                        switch("\(weather.weather[0].description)"){
+                                        case "clear sky":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "sun.max.fill")
+                                                        .foregroundStyle(.yellow)
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "few clouds","overcast clouds":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.sun.fill")
+                                                        .foregroundStyle(.gray,.yellow)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                        case "scattered clouds":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.fill")
+                                                        .foregroundStyle(.gray)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "broken clouds":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "smoke.fill")
+                                                        .foregroundStyle(.gray)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "shower rain","heavy intensity rain":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.heavyrain.fill")
+                                                        .foregroundStyle(.gray,.blue)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "rain","light rain","moderate rain","light intensity shower rain","light intensity drizzle","light intensity drizzle rain":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.sun.rain.fill")
+                                                        .foregroundStyle(.gray,.yellow,.blue)
+                                                    
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                                
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "thunderstorm":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.bolt.fill")
+                                                        .foregroundStyle(.gray,.yellow)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "snow","light snow":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.snow.fill")
+                                                        .foregroundStyle(.gray,.gray)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                            
+                                        case "mist","haze","fog":
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "cloud.fog.fill")
+                                                        .foregroundStyle(.gray,.brown)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                        default:
+                                            VStack{
+                                                HStack{
+                                                    Image(systemName: "thermometer.sun.fill")
+                                                        .foregroundStyle(.red,.yellow,.black)
+                                                    
+                                                }
+                                                Text(String(weather.weather[0].description))
+                                                    .fontWidth(.expanded)
+                                                    .font(.footnote)
+                                                    .foregroundStyle(.gray)
+                                            }
+                                            .frame(width:237, height: 85)
+                                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                            .shadow(radius: 20)
+                                        }
+                                        
+                                        VStack(alignment:.center){
+                                            
+                                            VStack(alignment: .center){
+                                                Text("\(String(format:"%.1f", weather.main.temp-273.15))°C")
+                                                    .fontWidth(.expanded)
+                                                    .font(.title2)
+                                                    .bold()
+                                                Text("(Feels Like \(String(format:"%.1f", weather.main.feels_like-273.15))°C)")
+                                                    .fontWidth(.expanded)
+                                                    .font(.caption)
+                                                
+                                                
+                                                HStack{
+                                                    Text("Min:\(String(format:"%.1f", weather.main.temp_min-273.15))°C")
+                                                        .fontWidth(.expanded)
+                                                        .font(.footnote)
+                                                        .bold()
+                                                    Text("Max:\(String(format:"%.1f", weather.main.temp_max-273.15))°C")
+                                                        .fontWidth(.expanded)
+                                                        .font(.footnote)
+                                                        .bold()
+                                                }
+                                            }
+                                            .padding(2)
+                                            VStack(alignment: .leading){
+                                                HStack{
+                                                    Image(systemName: "humidity.fill")
+                                                    Text("\(String (weather.main.humidity))%")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                                HStack{
+                                                    Image(systemName: "cloud.fill")
+                                                    Text("\(String( weather.clouds.all))%")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                                HStack{
+                                                    Image(systemName: "umbrella.percent.fill")
+                                                    Text("n/a%")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                                HStack{
+                                                    Image(systemName: "umbrella.fill")
+                                                    Text("\(String(format: "%.1f",weather.rain?.oneHour ?? 0))mm")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                                HStack{
+                                                    Image(systemName: "wind")
+                                                    Text("\(String(format:"%.1f", weather.wind.speed))(n/a)m/s")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                                HStack{
+                                                    Image(systemName: "angle")
+                                                    Text("n/a°")
+                                                        .fontWidth(.expanded)
+                                                        .font(.caption2)
+                                                        .bold()
+                                                }
+                                                .padding(2)
+                                            }
+                                            Text("NOW")
+                                                .fontWidth(.expanded)
+                                                .font(.title3)
+                                                .frame(width:190, height: 55)
+                                            
+                                            
+                                                .bold()
+                                            
+                                        }
+                                        .padding(12)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                        .padding(12)
+                                        
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(a % 2 == 0 ? .green : .red).opacity(0.1))
+                                    }
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                                     
+                                    .padding(.horizontal,10)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray))
+                                    .padding(.horizontal,10)
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.5)))
+                                    .padding(.horizontal,12)
+                                    
+                                    .padding(.top,30)
+                                    
+                                }
+                                ForEach(Range(range1...range2)){ i in
+                                
                                     VStack(alignment: .center){
                                         switch("\(hweather!.list[i].weather[0].description)"){
                                         case "clear sky":
@@ -419,7 +682,7 @@ struct DetailsView: View {
                                 .fontWidth(.expanded)
                                 .font(.subheadline)
                                 .foregroundStyle(.black)
-                                .frame(width: a == 0 ? CGFloat(alpha*308) : 24*312.5 )
+                                .frame(width: a == 0 ? CGFloat((alpha*308)+308) : 24*312.5 )
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 10).fill(a % 2 == 0 ? .green : .red).opacity(0.1))
