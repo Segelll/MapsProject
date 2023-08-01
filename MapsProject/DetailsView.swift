@@ -15,6 +15,7 @@ struct DetailsView: View {
     @Binding var elevation : ResponseBody2?
     @Binding var dweather : ResponseDaily?
     @Binding var alpha : Int
+    @Binding var searchmode : Bool
     @State var mode : Int = 0
     var body: some View {
        
@@ -24,11 +25,22 @@ struct DetailsView: View {
                     .font(.headline)
                     .fontWidth(.expanded)
                     .textCase(.uppercase)
-                Text(weather.name)
-                    .bold()
-                    .font(.largeTitle)
-                    .fontWidth(.expanded)
-                    .textCase(.uppercase)
+                Button(action:{
+                    showdetailsscreen.toggle()
+                },label:{
+                    
+                        Image(systemName:"pip.exit")
+                        .offset(x:5,y:-15)
+                   
+                        Text(weather.name)
+                            .bold()
+                            .font(.largeTitle)
+                            .fontWidth(.expanded)
+                            .textCase(.uppercase)
+                    
+                })
+                .foregroundStyle(searchmode ? .red:.indigo)
+                
                 Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
                     .bold()
                     .font(.subheadline)
@@ -701,6 +713,8 @@ struct DetailsView: View {
                     
                 }
             }
+            
+            
         }
         
         
@@ -780,11 +794,7 @@ struct DetailsView: View {
             
             
             
-            Button(action:{
-                showdetailsscreen.toggle()
-            },label:{
-                Text("close")
-            })
+          
             
         }
         

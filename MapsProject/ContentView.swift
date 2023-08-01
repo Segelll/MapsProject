@@ -1742,11 +1742,13 @@ struct newscreen:View{
                 VStack{
                     Spacer()
                 
-                       Text(weather.sys.country ?? "(Not Applicable)")
+                       Text(weather.sys.country ?? "")
                             .bold()
                             .font(.headline)
                             .fontWidth(.expanded)
                             .textCase(.uppercase)
+                    
+                        
                     Button(action:{
                         Task{
                             do{
@@ -1766,16 +1768,21 @@ struct newscreen:View{
                       
                             
                     },label:{
-                        Text(weather.name)
+                        
+                        Image(systemName: "pip.enter")
+                            .offset(x:5,y:-15)
+                        Text(weather.name == "" ? "(N/A)": weather.name)
                             .bold()
                             .font(.largeTitle)
                             .fontWidth(.expanded)
                             .textCase(.uppercase)
-                            .foregroundStyle(searchmode ? .red :.indigo)
+                            .padding(.bottom,weather.name == "" ? 10 : 0)
+                            
                         
                     })
+                    .foregroundStyle(searchmode ? .red :.indigo)
                     .fullScreenCover(isPresented: $showdetailsscreen){
-                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather,alpha:$alpha)
+                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather,alpha:$alpha,searchmode:$searchmode)
                     }
                     
                     Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
@@ -1910,12 +1917,12 @@ struct newscreen:View{
                            elevation = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: weather.coord.lat, longitude: weather.coord.lon))
                    }
                }
+       
         
-        .frame(
-              width: 615,
-              height:190
+        .frame(minWidth: 615,minHeight: 190)
+        .padding(10)
               
-            )
+            
     }
     // MARK: Causes performance issues (havent removed)
     func convertsun(sunvalue:Int,sunzone:Int) -> String{
