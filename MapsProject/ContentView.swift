@@ -1732,6 +1732,7 @@ struct newscreen:View{
     @State var hweather : ResponseHourly?
     @State var dweather : ResponseDaily?
     @State var showdetailsscreen : Bool = false
+    @State var alpha : Int = 0
    
     var body:some View{
        
@@ -1752,6 +1753,8 @@ struct newscreen:View{
                                 hweather =  try await weathermanager.gethourlyWeather(loc: CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
                                 
                                 dweather =  try await weathermanager.getdailyWeather(loc:CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
+                                alpha = 21 - ((hweather!.list[0].dt % 86400)/3600)
+                                print(alpha)
                                 showdetailsscreen.toggle()
                                 
                             }
@@ -1772,7 +1775,7 @@ struct newscreen:View{
                         
                     })
                     .fullScreenCover(isPresented: $showdetailsscreen){
-                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather)
+                        DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather,alpha:$alpha)
                     }
                     
                     Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
