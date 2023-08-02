@@ -98,13 +98,13 @@ struct ContentView: View{
                 ForEach (Destinationlocation ,id: \.self){ item in
                     let placemark=item.placemark
                     if placeredmode == false{
-                        Marker(placemark.name ?? "",image:"thermometer.sun.fill", coordinate:placemark.coordinate)
-                            .tint(.black)
+                        Marker(placemark.name ?? "",image:"location.magnifyingglass", coordinate:placemark.coordinate)
+                            .tint(.gray)
                         
                     }
                     else{
-                        Marker(placemark.name ?? "",image:"thermometer.sun.fill", coordinate:placemark.coordinate)
-                            .tint(.red)
+                        Marker(placemark.name ?? "",image:"thermometer.brakesignal", coordinate:placemark.coordinate)
+                            .tint(.red.opacity(0.8))
                     }
                     
                     
@@ -114,8 +114,8 @@ struct ContentView: View{
                 
                 
                 if tapped == true{
-                    Marker(weather?.name ?? "",image:"thermometer.sun.fill", coordinate: centeronend ?? locationViewer.currentcoordinate)
-                        .tint(.indigo)
+                    Marker(weather?.name ?? "",image:"thermometer.brakesignal", coordinate: centeronend ?? locationViewer.currentcoordinate)
+                        .tint(.indigo.opacity(0.8))
                     
                 }
                
@@ -358,13 +358,14 @@ struct ContentView: View{
                                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
+                                shownewscreen.toggle()
                             }catch{
                                 print("error")
                             }
                         }
                         
                     }
-                    shownewscreen.toggle()
+                    
                 },label:{
                     if markeron == true{
                         Image(systemName: "homekit")
@@ -482,7 +483,7 @@ struct ContentView: View{
                         Image(systemName: "bookmark.slash.fill")
                             .foregroundColor(.white)
                             .frame(width:55,height: 55)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(placeredmode ? .red : .black))
+                            .background(RoundedRectangle(cornerRadius: 10).fill(placeredmode ? .red.opacity(0.8) : .gray))
                             .shadow(radius: 20)
                         
                     })
@@ -1413,8 +1414,8 @@ struct ContentView: View{
                                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                            dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                             dateString = dateFormatter.string(from: dateInTimeZone!)
-                            
-                            
+                            shownewscreen.toggle()
+                            popupshowedbefore = true
                         }
                         catch{
                             print("error occured")
@@ -1425,8 +1426,8 @@ struct ContentView: View{
                 
                 
                 
-                shownewscreen.toggle()
-                popupshowedbefore = true
+                
+                
             }
             else {
                 popupshowedbefore = false
@@ -1769,7 +1770,7 @@ struct newscreen:View{
                             
                     },label:{
                         
-                        Image(systemName: "pip.enter")
+                        Image(systemName: "pip.exit")
                             .offset(x:5,y:-15)
                         Text(weather.name == "" ? "(N/A)": weather.name)
                             .bold()
@@ -1794,6 +1795,10 @@ struct newscreen:View{
                             .fontWidth(.expanded)
                             .bold()
                             .font(.caption)
+                    
+                    Text(weather.timezone/3600 > 0 ? "GMT+\(String(weather.timezone/3600))":"GMT\(String(weather.timezone/3600))" )
+                        .fontWidth(.expanded)
+                        .font(.footnote)
                     Spacer()
                     
                 }
@@ -1816,11 +1821,13 @@ struct newscreen:View{
                     }
                 
                     HStack{
-                        Text("Min:\(String(format:"%.1f",Double(weather.main.tempMin-273.15)))°C")
+                        Image(systemName:"thermometer.low")
+                        Text("\(String(format:"%.1f",Double(weather.main.tempMin-273.15)))°C")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.footnote)
-                        Text("Max:\(String(format:"%.1f",Double(weather.main.tempMax-273.15)))°C")
+                        Image(systemName:"thermometer.high")
+                        Text("\(String(format:"%.1f",Double(weather.main.tempMax-273.15)))°C")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.footnote)

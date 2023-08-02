@@ -20,7 +20,7 @@ struct DetailsView: View {
     var body: some View {
        
             VStack(alignment:.center){
-                Text(weather.sys.country ?? "(Not Applicable)")
+                Text(weather.sys.country ?? "")
                     .bold()
                     .font(.headline)
                     .fontWidth(.expanded)
@@ -29,10 +29,10 @@ struct DetailsView: View {
                     showdetailsscreen.toggle()
                 },label:{
                     
-                        Image(systemName:"pip.exit")
+                        Image(systemName:"pip.enter")
                         .offset(x:5,y:-15)
                    
-                        Text(weather.name)
+                    Text(weather.name == "" ? "(Not Applicable)":weather.name)
                             .bold()
                             .font(.largeTitle)
                             .fontWidth(.expanded)
@@ -49,20 +49,22 @@ struct DetailsView: View {
                 Text(dateString ?? "...")
                     .fontWidth(.expanded)
                     .font(.footnote)
-                Text("(GMT +\(String(weather.timezone/3600)) Timezone)")
+                Text(weather.timezone/3600 > 0 ? "(GMT +\(String(weather.timezone/3600)) Timezone)":"(GMT \(String(weather.timezone/3600)) Timezone)")
                     .fontWidth(.expanded)
                     .font(.footnote)
-                HStack{
-                    Image(systemName: "sunrise.fill")
-                    Text(convert2(value: weather.sys.sunrise))
-                        .fontWidth(.expanded)
-                        .bold()
-                        .font(.caption2)
-                    Image(systemName: "sunset.fill")
-                    Text(convert2(value: weather.sys.sunset))
-                        .fontWidth(.expanded)
-                        .bold()
-                        .font(.caption2)
+                if mode == 0{
+                    HStack{
+                        Image(systemName: "sunrise.fill")
+                        Text(convert2(value: weather.sys.sunrise))
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                        Image(systemName: "sunset.fill")
+                        Text(convert2(value: weather.sys.sunset))
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
                 }
             }
          /*   VStack{
@@ -334,11 +336,13 @@ struct DetailsView: View {
                                                 
                                                 
                                                 HStack{
-                                                    Text("Min:\(String(format:"%.1f", weather.main.temp_min-273.15))°C")
+                                                    Image(systemName: "thermometer.low")
+                                                    Text("\(String(format:"%.1f", weather.main.temp_min-273.15))°C")
                                                         .fontWidth(.expanded)
                                                         .font(.footnote)
                                                         .bold()
-                                                    Text("Max:\(String(format:"%.1f", weather.main.temp_max-273.15))°C")
+                                                    Image(systemName: "thermometer.high")
+                                                    Text("\(String(format:"%.1f", weather.main.temp_max-273.15))°C")
                                                         .fontWidth(.expanded)
                                                         .font(.footnote)
                                                         .bold()
@@ -413,9 +417,9 @@ struct DetailsView: View {
                                     .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                                     
                                     .padding(.horizontal,10)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray))
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.6)))
                                     .padding(.horizontal,10)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.5)))
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.3)))
                                     .padding(.horizontal,12)
                                     
                                     .padding(.top,30)
@@ -598,11 +602,13 @@ struct DetailsView: View {
                                                 
                                                     
                                                 HStack{
-                                                    Text("Min:\(String(format:"%.1f", hweather!.list[i].main.temp_min-273.15))°C")
+                                                    Image(systemName: "thermometer.low")
+                                                    Text("\(String(format:"%.1f", hweather!.list[i].main.temp_min-273.15))°C")
                                                         .fontWidth(.expanded)
                                                         .font(.footnote)
                                                         .bold()
-                                                    Text("Max:\(String(format:"%.1f", hweather!.list[i].main.temp_max-273.15))°C")
+                                                    Image(systemName: "thermometer.high")
+                                                    Text("\(String(format:"%.1f", hweather!.list[i].main.temp_max-273.15))°C")
                                                         .fontWidth(.expanded)
                                                         .font(.footnote)
                                                         .bold()
@@ -680,9 +686,9 @@ struct DetailsView: View {
                                     .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                                     
                                     .padding(.horizontal,10)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(hweather!.list[i].sys.pod == "d" ? .yellow:.indigo))
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(hweather!.list[i].sys.pod == "d" ? .yellow.opacity(0.6):.indigo.opacity(0.6)))
                                     .padding(.horizontal,10)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(hweather!.list[i].sys.pod == "d" ? .yellow.opacity(0.5):.indigo.opacity(0.5)))
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(hweather!.list[i].sys.pod == "d" ? .yellow.opacity(0.3):.indigo.opacity(0.3)))
                                     .padding(.horizontal,12)
                                     
                                     .padding(.top,30)
@@ -722,72 +728,355 @@ struct DetailsView: View {
             ScrollView(.horizontal) {
                 HStack{
                     ForEach(Range(0...15)){ a in
-                        VStack{
-                            Text(String(convert3(value:dweather!.list[a].dt)))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(convert2(value:dweather!.list[a].sunrise)))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(convert2(value:dweather!.list[a].sunset)))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(dweather!.list[a].weather[0].description))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
+                        VStack(alignment:.center){
+                            switch("\(dweather!.list[a].weather[0].description)"){
+                            case "clear sky","sky is clear":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "sun.max.fill")
+                                            .foregroundStyle(.yellow)
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "few clouds","overcast clouds":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.sun.fill")
+                                            .foregroundStyle(.gray,.yellow)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            case "scattered clouds":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.fill")
+                                            .foregroundStyle(.gray)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "broken clouds":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "smoke.fill")
+                                            .foregroundStyle(.gray)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "shower rain","heavy intensity rain":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.heavyrain.fill")
+                                            .foregroundStyle(.gray,.blue)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "rain","light rain","moderate rain","light intensity shower rain","light intensity drizzle","light intensity drizzle rain":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.sun.rain.fill")
+                                            .foregroundStyle(.gray,.yellow,.blue)
+                                        
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                    
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "thunderstorm":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.bolt.fill")
+                                            .foregroundStyle(.gray,.yellow)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "snow","light snow":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.snow.fill")
+                                            .foregroundStyle(.gray,.gray)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                                
+                            case "mist","haze","fog":
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "cloud.fog.fill")
+                                            .foregroundStyle(.gray,.brown)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            default:
+                                VStack{
+                                    HStack{
+                                        Image(systemName: "thermometer.sun.fill")
+                                            .foregroundStyle(.red,.yellow,.black)
+                                        
+                                    }
+                                    Text(String(dweather!.list[a].weather[0].description))
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.gray)
+                                }
+                                .frame(width:350, height: 85)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            }
                             
-                            Text(String(format:"%.3f", dweather!.list[a].temp.morn-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].temp.day-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].temp.eve-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].temp.night-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].feels_like.morn-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].feels_like.day-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].feels_like.eve-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].feels_like.night-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].temp.min-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f", dweather!.list[a].temp.max-273.15))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String (dweather!.list[a].humidity))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String( dweather!.list[a].clouds))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String(format:"%.3f",dweather!.list[a].pop * 100))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String (dweather!.list[a].rain ?? 0))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text("\(String( dweather!.list[a].speed))(\(String(dweather!.list[a].gust)))")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text(String( dweather!.list[a].deg))
-                                .fontWidth(.expanded)
-                                .font(.footnote)
+                            
+                            
+                            
+                            HStack{
+                                
+                                VStack(alignment:.center){
+                                    Image(systemName: "sun.horizon.fill")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].temp.morn-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.subheadline)
+                                        .bold()
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "sun.min.fill")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].temp.day-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.subheadline)
+                                        .bold()
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "moon.haze.fill")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].temp.eve-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.subheadline)
+                                        .bold()
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "moon.stars.fill")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].temp.night-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.subheadline)
+                                        .bold()
+                                }
+                            }
+                            .padding(.vertical,3)
+                            .padding(.top,2)
+                            HStack{
+                                VStack(alignment:.center){
+                                    Image(systemName: "sun.horizon")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].feels_like.morn-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "sun.min")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].feels_like.day-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "moon.haze")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].feels_like.eve-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                }
+                                VStack(alignment:.center){
+                                    Image(systemName: "moon.stars")
+                                    Text("\(String(format:"%.1f", dweather!.list[a].feels_like.night-273.15))°C")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                }
+                            }
+                            .padding(.vertical,3)
+                            HStack{
+                                Image(systemName: "thermometer.low")
+                                Text("\(String(format:"%.1f", dweather!.list[a].temp.min-273.15))°C ")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .bold()
+                                Image(systemName: "thermometer.high")
+                                Text("\(String(format:"%.1f", dweather!.list[a].temp.max-273.15))°C")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                    .bold()
+                            }
+                            .padding(.vertical,3)
+                            
+                            
+                            
+                                VStack(alignment: .center){
+                                    HStack{
+                                        Image(systemName: "sunrise.fill")
+                                        Text(String(convert2(value:dweather!.list[a].sunrise)))
+                                            .fontWidth(.expanded)
+                                            .bold()
+                                            .font(.caption2)
+                                        Image(systemName: "sunset.fill")
+                                        Text(String(convert2(value:dweather!.list[a].sunset)))
+                                            .fontWidth(.expanded)
+                                            .bold()
+                                        .font(.caption2)                            }
+                                    .padding(12)
+                                    
+                                    
+                                    .background(RoundedRectangle(cornerRadius: 10).fill(a % 2 == 0 ? .green : .red).opacity(0.1))
+                                    VStack(alignment:.leading){
+                                        HStack{
+                                            Image(systemName: "humidity.fill")
+                                            Text("\(String (dweather!.list[a].humidity))%")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        .padding(2)
+                                        HStack{
+                                            Image(systemName: "cloud.fill")
+                                            Text("\(String( dweather!.list[a].clouds))%")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        .padding(2)
+                                        HStack{
+                                            Image(systemName: "umbrella.percent.fill")
+                                            Text("\(String(Int(dweather!.list[a].pop * 100)))%")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        .padding(2)
+                                        HStack{
+                                            Image(systemName: "umbrella.fill")
+                                            Text("\(String(format: "%.1f",dweather!.list[a].rain ?? 0))mm")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        .padding(2)
+                                        HStack{
+                                            Image(systemName: "wind")
+                                            Text("\(String(format:"%.1f", dweather!.list[a].speed))(\(String(format:"%.1f",dweather!.list[a].gust)))m/s")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        .padding(2)
+                                        HStack{
+                                            Image(systemName: "angle")
+                                            Text("\(String( dweather!.list[a].deg))°")
+                                                .fontWidth(.expanded)
+                                                .font(.caption2)
+                                                .bold()
+                                        }
+                                        
+                                        .padding(2)
+                                    }
+                                    
+                                    Text(String(convert3(value:dweather!.list[a].dt)))
+                                        .fontWidth(.expanded)
+                                        .font(.title3)
+                                        .frame(width:190, height: 55)
+                                        .bold()
+                                    
+                                    
+                                
+                            }
+                                .padding(12)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .padding(12)
+                                
+                                .background(RoundedRectangle(cornerRadius: 10).fill(a % 2 == 0 ? .green : .red).opacity(0.1))
+                                .padding(.vertical,12)
+                                
+                                
+                            
                         }
+                        .padding(.vertical,-10)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .padding(.vertical,10)
+                           
+                            
+                            .padding(.horizontal,10)
+                            .background(RoundedRectangle(cornerRadius: 10).fill( a % 2 == 0 ? .green : .red).opacity(0.2))
+                            .padding(.horizontal,10)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.4)))
+                            .padding(.horizontal,10)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.gray.opacity(0.2)))
+                            .padding(.horizontal,8)
+                            
+                            .padding(.top,30)
                         
-                        
+                        }
+                    .padding(.horizontal,1)
+                    .padding(.vertical,15)
                     }
+                
+                
                 }
             }
             
@@ -800,7 +1089,7 @@ struct DetailsView: View {
         
         
     }
-    }
+    
     
 
 extension DetailsView {
