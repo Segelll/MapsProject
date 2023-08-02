@@ -66,6 +66,8 @@ struct ContentView: View{
     @State var route : [MKRoute?] = []
     @State var routemode : Bool = false
     @State var routelength : Double = 0
+    @State var centerlock : Bool = false
+    @State var centerlockcoord = CLLocationCoordinate2D(latitude:0,longitude:0)
     var body :some View{
         
         
@@ -114,7 +116,7 @@ struct ContentView: View{
                 
                 
                 if tapped == true{
-                    Marker(weather?.name ?? "",image:"thermometer.brakesignal", coordinate: centeronend ?? locationViewer.currentcoordinate)
+                    Marker(weather?.name ?? "",image:centerlock ? "custom.lock.fill.2.badge.checkmark": "thermometer.brakesignal", coordinate:centerlock ? centerlockcoord : centeronend ?? locationViewer.currentcoordinate)
                         .tint(.indigo.opacity(0.8))
                     
                 }
@@ -444,6 +446,7 @@ struct ContentView: View{
                 }
                 if searchmode == true && Destinationlocation.isEmpty == false {
                     Button(action:{
+                        placeredmode = false
                         withAnimation{
                         mapselection = nil
                         
@@ -451,7 +454,7 @@ struct ContentView: View{
                            searchText = ""
                         }
                         
-                        placeredmode = false
+                        
                         if locationbuttonpressed == true{
                             redmode = true
                         }
@@ -459,7 +462,6 @@ struct ContentView: View{
                         Task{
                             
                             do{
-                               
                                     
                                         weather = try await weathermanager.getWeather(loc:locationViewer.currentcoordinate)
                                         weatherfound = true
@@ -523,7 +525,7 @@ struct ContentView: View{
                             do{
                                 if mapselection == nil{
                                    
-                                        weather = try await weathermanager.getWeather(loc: tapped == false ? locationViewer.currentcoordinate : centeronend!)
+                                    weather = try await weathermanager.getWeather(loc: tapped == false ? locationViewer.currentcoordinate : (centerlock ? centerlockcoord :centeronend!))
                                      
                                         
                                    
@@ -703,8 +705,58 @@ struct ContentView: View{
                     }
                     
                 }
-               
-             
+                Button(action:{
+                    
+                        centerlock.toggle()
+                    
+                    if centerlock == false {
+                        Task{
+                            do{
+                                if mapselection == nil{
+                                    
+                                    
+                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                    weatherfound = true
+                                    let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
+                                       let dateFormatter = DateFormatter()
+                                       dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
+                                    dateString = dateFormatter.string(from: dateInTimeZone!)
+                                    
+                                }
+                                
+                                
+                            }
+                            catch{
+                                print("error occured")
+                            }
+                            
+                        }
+                    }
+                    else{
+                        centerlockcoord = centeronend ?? locationViewer.currentcoordinate
+                    }
+                },label:{
+                    if searchmode == false{
+                        if centerlock == true{
+                        Image(systemName: "lock.fill")
+                                .foregroundStyle(.indigo.opacity(0.8))
+                            .frame(width:55,height: 55)
+                            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                            .shadow(radius: 20)
+                              }
+                              else{
+                            Image(systemName: "lock.open.fill")
+                                      .foregroundStyle(.indigo.opacity(0.8))
+                                .frame(width:55,height: 55)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                        }
+                    } else {
+                        Text("")
+                        
+                    }
+                })
                 Button(action:{
                     withAnimation{
                         searchmode.toggle()
@@ -743,7 +795,7 @@ struct ContentView: View{
                         Task{
                             do{
                                 
-                                    weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                                weather = try await weathermanager.getWeather(loc: centerlock ? centerlockcoord :centeronend ?? locationViewer.currentcoordinate)
                                     weatherfound = true
                                 
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
@@ -792,6 +844,7 @@ struct ContentView: View{
                             .shadow(radius: 20)
                     }
                 })
+                
                 
                 
                 Button(action:{
@@ -1358,7 +1411,7 @@ struct ContentView: View{
         })
         .onMapCameraChange(frequency: .onEnd, { newcamera in
             centeronend = newcamera.region.center
-            if tapped == true{
+            if tapped == true && centerlock == false{
                 Task{
                     do{
                         if mapselection == nil{
@@ -1781,7 +1834,7 @@ struct newscreen:View{
                             
                         
                     })
-                    .foregroundStyle(searchmode ? .red :.indigo)
+                    .foregroundStyle(searchmode ? .red.opacity(0.8) :.indigo.opacity(0.8))
                     .fullScreenCover(isPresented: $showdetailsscreen){
                         DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather,alpha:$alpha,searchmode:$searchmode)
                     }

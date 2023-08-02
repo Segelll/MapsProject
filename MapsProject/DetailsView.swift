@@ -39,8 +39,9 @@ struct DetailsView: View {
                             .textCase(.uppercase)
                     
                 })
-                .foregroundStyle(searchmode ? .red:.indigo)
-                
+                .foregroundStyle(searchmode ? .red.opacity(0.8)
+:.indigo.opacity(0.8)
+)
                 Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
                     .bold()
                     .font(.subheadline)
