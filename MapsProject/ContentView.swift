@@ -494,13 +494,13 @@ struct ContentView: View{
             
                 Button(action:{
                     if placeredmode == true{
-                        let placemark = Destinationlocation[0].placemark
+                        let placemark = Destinationlocation.count > 0 ? Destinationlocation[0].placemark.coordinate : locationViewer.currentcoordinate
                         Task{
                            
                             do{
                                
                                     
-                                        weather = try await weathermanager.getWeather(loc: placemark.coordinate )
+                                        weather = try await weathermanager.getWeather(loc: placemark )
                                         weatherfound = true
                                     
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
