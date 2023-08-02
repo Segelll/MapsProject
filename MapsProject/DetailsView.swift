@@ -39,9 +39,7 @@ struct DetailsView: View {
                             .textCase(.uppercase)
                     
                 })
-                .foregroundStyle(searchmode ? .red.opacity(0.8)
-:.indigo.opacity(0.8)
-)
+                .foregroundStyle(searchmode ? .red.opacity(0.8):.indigo.opacity(0.8))
                 Text("(\(String(format:"%.3f", weather.coord.lat))°, \(String(format:"%.3f", weather.coord.lon))°/\(String(format:"%.0f",(elevation?.elevation[0]) ?? 0.0))m)")
                     .bold()
                     .font(.subheadline)
@@ -53,7 +51,7 @@ struct DetailsView: View {
                 Text(weather.timezone/3600 > 0 ? "(GMT +\(String(weather.timezone/3600)) Timezone)":"(GMT \(String(weather.timezone/3600)) Timezone)")
                     .fontWidth(.expanded)
                     .font(.footnote)
-                if mode == 0{
+              /*  if mode == 0{
                     HStack{
                         Image(systemName: "sunrise.fill")
                         Text(convert2(value: weather.sys.sunrise))
@@ -66,8 +64,9 @@ struct DetailsView: View {
                             .bold()
                             .font(.caption2)
                     }
-                }
+                } */
             }
+            .padding(-10)
          /*   VStack{
                 
                 Text("\(String(format:"%.1f",Double(weather.main.temp-273.15)))°C")
@@ -697,11 +696,26 @@ struct DetailsView: View {
                                    
                                 }
                             }
-                            Text(convert3(value:hweather!.list[range1].dt))
-                                .fontWidth(.expanded)
-                                .font(.subheadline)
-                                .foregroundStyle(.black)
+                            HStack{
+                                Image(systemName: "sunrise.fill")
+                                Text(String(convert2(value:dweather!.list[a].sunrise)))
+                                    .fontWidth(.expanded)
+                                    .bold()
+                                    .font(.caption2)
+                                Text(convert3(value:hweather!.list[range1].dt))
+                                    .fontWidth(.expanded)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.black)
+                               
+                                Text(String(convert2(value:dweather!.list[a].sunset)))
+                                    .fontWidth(.expanded)
+                                    .bold()
+                                    .font(.caption2)
+                                Image(systemName: "sunset.fill")
+
+                            }
                                 .frame(width: a == 0 ? CGFloat((alpha*308)+308) : 24*312.5 )
+                                
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 10).fill(a % 2 == 0 ? .green : .red).opacity(0.1))
@@ -977,11 +991,12 @@ struct DetailsView: View {
                                             .fontWidth(.expanded)
                                             .bold()
                                             .font(.caption2)
-                                        Image(systemName: "sunset.fill")
+                                        
                                         Text(String(convert2(value:dweather!.list[a].sunset)))
                                             .fontWidth(.expanded)
                                             .bold()
-                                        .font(.caption2)                            }
+                                        .font(.caption2)
+                                        Image(systemName: "sunset.fill")}
                                     .padding(12)
                                     
                                     
