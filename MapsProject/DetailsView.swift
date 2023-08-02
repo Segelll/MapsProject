@@ -714,7 +714,7 @@ struct DetailsView: View {
                                 Image(systemName: "sunset.fill")
 
                             }
-                                .frame(width: a == 0 ? CGFloat((alpha*308)+308) : 24*312.5 )
+                                .frame(width: a == 0 ? CGFloat((alpha*308)+308) : 24*308 )
                                 
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .padding(10)

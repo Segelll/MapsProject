@@ -449,7 +449,7 @@ struct ContentView: View{
                         placeredmode = false
                         withAnimation{
                         mapselection = nil
-                        
+                        redmode = true
                         
                            searchText = ""
                         }
@@ -1807,10 +1807,8 @@ struct newscreen:View{
                         Task{
                             do{
                                 hweather =  try await weathermanager.gethourlyWeather(loc: CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
-                                
                                 dweather =  try await weathermanager.getdailyWeather(loc:CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
-                                alpha = 21 - ((hweather!.list[0].dt % 86400)/3600)
-                                print(alpha)
+                                alpha = 21 - ((hweather!.list[0].dt/3600) % 24)
                                 showdetailsscreen.toggle()
                                 
                             }
@@ -1834,6 +1832,7 @@ struct newscreen:View{
                             
                         
                     })
+                    
                     .foregroundStyle(searchmode ? .red.opacity(0.8) :.indigo.opacity(0.8))
                     .fullScreenCover(isPresented: $showdetailsscreen){
                         DetailsView(showdetailsscreen:$showdetailsscreen ,hweather:$hweather,weather:$weather, dateString: $dateString,elevation: $elevation,dweather:$dweather,alpha:$alpha,searchmode:$searchmode)
@@ -1984,6 +1983,7 @@ struct newscreen:View{
               
             
     }
+    
     // MARK: Causes performance issues (havent removed)
     func convertsun(sunvalue:Int,sunzone:Int) -> String{
         let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
