@@ -79,6 +79,7 @@ struct ContentView: View{
                 ForEach(centersymbol) { symbol in
                     Annotation("",coordinate:symbol.coordinate){
                         Image(systemName:symbol.name)
+                            .foregroundStyle(satellitebutton ? .white : .black)
                     }
                 }
             }
