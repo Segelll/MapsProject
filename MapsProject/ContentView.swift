@@ -201,7 +201,6 @@ struct ContentView: View{
                                 
                                 Text("(\(String(format: "%.3f",i == poly-1 ? firstA :angle[i]))°)")
                                 
-                                    .fontWidth(.expanded)
                                     .font(.footnote)
                                     .foregroundStyle(.white)
                                     .bold()
@@ -391,8 +390,7 @@ struct ContentView: View{
                 ZStack{
                     if searchmode == true{
                         TextField("Search for a place...",text: $searchText)
-                            .fontWidth(.expanded)
-                            .font(.footnote)
+                            .font(.subheadline)
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .padding(1)
