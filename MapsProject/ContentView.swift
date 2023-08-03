@@ -1027,12 +1027,12 @@ struct ContentView: View{
                             
                             
                             let firstThird = distancecalc(coord1: polygonviewer.polycoordinates[1], coord2: polygonviewer.polycoordinates[poly-1])*1000
-                            angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird)!
+                            angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird) ?? 0
                             let third = distancecalc(coord1: polygonviewer.polycoordinates[poly-1], coord2: polygonviewer.polycoordinates[poly-3])*1000
-                            angle.append(cosineTheoremForAngle(a:distance[poly-2] , b: distance[poly-3], c:third )!)
+                            angle.append(cosineTheoremForAngle(a:distance[poly-2] , b: distance[poly-3], c:third ) ?? 0)
                             
                             let firstendthird = distancecalc(coord1: polygonviewer.polycoordinates[0], coord2: polygonviewer.polycoordinates[poly-2])*1000
-                            firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
+                            firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird) ?? 0
                         }
                         if poly > 1{
                             total += distance[poly-2]
@@ -1231,9 +1231,9 @@ struct ContentView: View{
                             if distance.count > 1 {
                                 
                                 let firstendthird = distancecalc(coord1: polygonviewer.polycoordinates[0], coord2: polygonviewer.polycoordinates[poly-2])*1000
-                                firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird)!
+                                firstA = cosineTheoremForAngle(a: distance[poly-2], b: firstD, c: firstendthird) ?? 0
                                 let firstThird = distancecalc(coord1: polygonviewer.polycoordinates[1], coord2: polygonviewer.polycoordinates[poly-1])*1000
-                                angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird)!
+                                angle[0] = cosineTheoremForAngle(a: distance[0], b: firstD, c: firstThird) ?? 0
                                 
                             }
                             if poly > 1 {
