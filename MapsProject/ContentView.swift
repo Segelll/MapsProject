@@ -12,7 +12,7 @@ import FirebaseAuth
 import Charts
 struct ContentView: View{
     @AppStorage("uid") var userid: String = ""
-    @State private var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 39.925533, longitude: 32.866287) ,latitudinalMeters: 12500,longitudinalMeters: 12500))
+    @State var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 39.925533, longitude: 32.866287) ,latitudinalMeters: 12500,longitudinalMeters: 12500))
     @State var mapselection: MKMapItem?
     @State private var searchText = ""
     @State private var Destinationlocation = [MKMapItem]()
@@ -68,12 +68,20 @@ struct ContentView: View{
     @State var routelength : Double = 0
     @State var centerlock : Bool = false
     @State var centerlockcoord = CLLocationCoordinate2D(latitude:0,longitude:0)
+    @State var showsymbolscreen : Bool = false
+    @State var centersymbol : [Symbol] = []
     var body :some View{
         
         
     
         Map(position: $cameraPosition, selection:$mapselection){
-            
+            if centersymbol.count > 0 {
+                ForEach(centersymbol) { symbol in
+                    Annotation("",coordinate:symbol.coordinate){
+                        Image(systemName:symbol.name)
+                    }
+                }
+            }
             if markeron == true{
                 
                
@@ -914,9 +922,10 @@ struct ContentView: View{
         .overlay(alignment:.bottom){
             HStack{
                 Spacer()
-                
+                //MARK: SYMBOL BUTTON
                 Button(action:{
-                    
+                
+                    showsymbolscreen.toggle()
                     
                 },label:{
                     let txttemplat = String(format: "%.3f",centerlocation?.latitude ?? locationViewer.currentcoordinate.latitude)
@@ -935,6 +944,9 @@ struct ContentView: View{
                     
                 })
                 .offset(y:-10)
+                .popover(isPresented:$showsymbolscreen){
+                    SymbolView(centersymbol: $centersymbol, centeronend: $centeronend,elevation:$elevation,cameraPosition:$cameraPosition)
+                }
                
        
                
@@ -2137,6 +2149,13 @@ class ElevationManager{
         let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
         return(decoded)
     }
+}
+//MARK: UISYMBOL
+struct Symbol :Identifiable{
+    let name : String
+    let coordinate : CLLocationCoordinate2D
+    let elevation : Double
+    let id: UUID
 }
 
 struct Analytics:Identifiable {
