@@ -296,7 +296,6 @@ struct ContentView: View{
                             .fontWidth(.expanded)
                             .bold()
                             .italic()
-                            .fontWidth(.expanded)
                             .font(.footnote)
                             .foregroundStyle(.gray)
                             .frame(width:90, height: 55)
@@ -310,7 +309,6 @@ struct ContentView: View{
                         .fontWidth(.expanded)
                         .bold()
                         .italic()
-                        .fontWidth(.expanded)
                         .font(.footnote)
                         .foregroundStyle(.black)
                         .frame(width:200, height: 55)
@@ -393,7 +391,8 @@ struct ContentView: View{
                 ZStack{
                     if searchmode == true{
                         TextField("Search for a place...",text: $searchText)
-                            .font(.subheadline)
+                            .fontWidth(.expanded)
+                            .font(.footnote)
                             .padding(10)
                             .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                             .padding(1)
