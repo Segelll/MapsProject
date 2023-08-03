@@ -665,7 +665,7 @@ struct DetailsView: View {
                                                 }
                                                 .padding(2)
                                             }
-                                            Text(convert2(value:hweather!.list[i].dt))
+                                            Text(convertsun2(sunvalue:hweather!.list[i].dt,sunzone:weather.timezone))
                                                 .fontWidth(.expanded)
                                                 .font(.title3)
                                                 .frame(width:190, height: 55)
@@ -698,16 +698,16 @@ struct DetailsView: View {
                             }
                             HStack{
                                 Image(systemName: "sunrise.fill")
-                                Text(String(convert2(value:dweather!.list[a].sunrise)))
+                                Text(String(convertsun2(sunvalue:dweather!.list[a].sunrise,sunzone:weather.timezone)))
                                     .fontWidth(.expanded)
                                     .bold()
                                     .font(.caption2)
-                                Text(convert3(value:hweather!.list[range1].dt))
+                                Text(convertsun3(sunvalue:hweather!.list[range1].dt,sunzone:weather.timezone))
                                     .fontWidth(.expanded)
                                     .font(.subheadline)
                                     .foregroundStyle(.black)
                                
-                                Text(String(convert2(value:dweather!.list[a].sunset)))
+                                Text(String(convertsun2(sunvalue:dweather!.list[a].sunset,sunzone:weather.timezone)))
                                     .fontWidth(.expanded)
                                     .bold()
                                     .font(.caption2)
@@ -987,12 +987,12 @@ struct DetailsView: View {
                                 VStack(alignment: .center){
                                     HStack{
                                         Image(systemName: "sunrise.fill")
-                                        Text(String(convert2(value:dweather!.list[a].sunrise)))
+                                        Text(String(convertsun2(sunvalue:dweather!.list[a].sunrise,sunzone:weather.timezone)))
                                             .fontWidth(.expanded)
                                             .bold()
                                             .font(.caption2)
                                         
-                                        Text(String(convert2(value:dweather!.list[a].sunset)))
+                                        Text(String(convertsun2(sunvalue:dweather!.list[a].sunset,sunzone:weather.timezone)))
                                             .fontWidth(.expanded)
                                             .bold()
                                         .font(.caption2)
@@ -1053,7 +1053,7 @@ struct DetailsView: View {
                                         .padding(2)
                                     }
                                     
-                                    Text(String(convert3(value:dweather!.list[a].dt)))
+                                    Text(String(convertsun3(sunvalue:dweather!.list[a].dt,sunzone:weather.timezone)))
                                         .fontWidth(.expanded)
                                         .font(.title3)
                                         .frame(width:190, height: 55)
@@ -1109,29 +1109,28 @@ struct DetailsView: View {
     
 
 extension DetailsView {
-    
-    
-    func convert(value:Int) -> String{
-        let date = Date(timeIntervalSince1970: TimeInterval(value))
+    func convertsun(sunvalue:Int,sunzone:Int) -> String{
+        let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
         let dateFormatter = DateFormatter()
-           
-            dateFormatter.dateFormat = "MMM d, HH:mm"
-            return dateFormatter.string(from: date)
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
+        dateFormatter.dateFormat = "MMM d, HH:mm"
+        return dateFormatter.string(from: date)
     }
-    func convert2(value:Int) -> String{
-        let date = Date(timeIntervalSince1970: TimeInterval(value))
+    func convertsun2(sunvalue:Int,sunzone:Int) -> String{
+        let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
         let dateFormatter = DateFormatter()
-           
-            dateFormatter.dateFormat = "HH:mm"
-            return dateFormatter.string(from: date)
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: date)
     }
-    func convert3(value:Int) -> String{
-        let date = Date(timeIntervalSince1970: TimeInterval(value))
+    func convertsun3(sunvalue:Int,sunzone:Int) -> String{
+        let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
         let dateFormatter = DateFormatter()
-        
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
         dateFormatter.dateFormat = "MMM d"
         return dateFormatter.string(from: date)
     }
+    
     
 }
 
