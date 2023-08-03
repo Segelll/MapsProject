@@ -53,34 +53,36 @@ struct SymbolView: View {
             .padding(10)
         }
         if mode == 1 {
-            ForEach(centersymbol) { symbol in
-                HStack{
-                    VStack{
-                        Button(action:{
-                            cameraPosition = .region (MKCoordinateRegion(center: symbol.coordinate ,latitudinalMeters: 12500,longitudinalMeters: 12500))
-                        },label:{
-                            Image(systemName:symbol.name)
-                            Text("\(String(format:"%.3f",symbol.coordinate.latitude))° , \(String(format:"%.3f",symbol.coordinate.longitude))° /")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            Text("\(String(format:"%.0f",symbol.elevation))m")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                        })
-                        Button(action:{
-                            centersymbol.removeAll { $0.id == symbol.id }
-                        },label:{
-                            Text("Remove")
-                                .foregroundStyle(.red)
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                            
-                        })
+            ScrollView(.vertical){
+                ForEach(centersymbol) { symbol in
+                    HStack{
+                        VStack{
+                            Button(action:{
+                                cameraPosition = .region (MKCoordinateRegion(center: symbol.coordinate ,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                            },label:{
+                                Image(systemName:symbol.name)
+                                Text("\(String(format:"%.3f",symbol.coordinate.latitude))° , \(String(format:"%.3f",symbol.coordinate.longitude))° /")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                Text("\(String(format:"%.0f",symbol.elevation))m")
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                            })
+                            Button(action:{
+                                centersymbol.removeAll { $0.id == symbol.id }
+                            },label:{
+                                Text("Remove")
+                                    .foregroundStyle(.red)
+                                    .fontWidth(.expanded)
+                                    .font(.footnote)
+                                
+                            })
+                        }
+                        .padding(10)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .foregroundStyle(.black)
+                        .padding(10)
                     }
-                    .padding(10)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                    .foregroundStyle(.black)
-                    .padding(10)
                 }
             }
         }
