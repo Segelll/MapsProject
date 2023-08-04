@@ -1072,11 +1072,8 @@ struct ContentView: View{
                         .offset(y:-10)
                         .onSubmit{
                             if analyzed == false{
-                                if Double(amount) ?? 13 > 46 {
-                                    amount = "46"
-                                }
-                                if Double(amount) ?? 13 == 0 {
-                                    amount = "100"
+                                if Double(amount) ?? 13 > 99 {
+                                    amount = "99"
                                 }
 
                                 
@@ -1084,9 +1081,11 @@ struct ContentView: View{
                                 Loading = true
                                 Task {
                                     do {
+                                        
                                         try await fetchDataFromServer()
-                                        showanalytics.toggle()
+                                        
                                         Loading = false
+                                        showanalytics.toggle()
                                     } catch {
                                         print("Error fetching data from server: \(error)")
                                     }
@@ -1102,11 +1101,8 @@ struct ContentView: View{
               
                     Button(action:{
                         if analyzed == false{
-                            if Double(amount) ?? 13 > 46 {
-                                amount = "46"
-                            }
-                            if Double(amount) ?? 13 == 0 {
-                                amount = "100"
+                            if Double(amount) ?? 13 > 99 {
+                                amount = "99"
                             }
 
                             
@@ -1114,9 +1110,11 @@ struct ContentView: View{
                             Loading = true
                             Task {
                                 do {
+                                    
                                     try await fetchDataFromServer()
-                                    showanalytics.toggle()
+                                    
                                     Loading = false
+                                    showanalytics.toggle()
                                 } catch {
                                     print("Error fetching data from server: \(error)")
                                 }
@@ -1556,19 +1554,32 @@ struct AnalyticsView: View {
             
                 Chart(tablecontent){ content in
                     
-                    LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
-                             y: .value("second" , content.temp)
-                    )
+                        LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
+                                 y: .value("second" , content.temp)
+                        )
+                        .cornerRadius(10)
+                        .foregroundStyle(.red)
+                        
+                        PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
+                                  y: .value("second" , content.temp)
+                        )
+                        .cornerRadius(10)
+                        .annotation{
+                            Text("\(String(format:"%.1f" , content.temp))°C")
+                                .font(.caption2)
+                                .fontWidth(.expanded)
+                                .foregroundStyle(.red)
+                            
+                        }
+                        .symbolSize(100)
+                        .symbol(BasicChartSymbolShape.circle)
+                        .foregroundStyle(.red)
                     
-                    .foregroundStyle(.red)
-                    
-                    PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
-                              y: .value("second" , content.temp)
-                    )
-                    .symbol(BasicChartSymbolShape.circle)
-                    .foregroundStyle(.red)
                 }
-            
+                .chartScrollableAxes(.horizontal)
+                .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
+                .chartScrollTargetBehavior(.valueAligned(unit: 1))
+               
             
             .chartOverlay { proxy in
                 GeometryReader { geometry in
@@ -1614,16 +1625,28 @@ struct AnalyticsView: View {
                 LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.elev)
                 )
-                
+                .cornerRadius(10)
                 .foregroundStyle(.green)
               
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.elev)
                     )
+                    .cornerRadius(10)
+                    .annotation{
+                        Text("\(String(format:"%.0f" , content.elev))m")
+                            .font(.caption2)
+                            .fontWidth(.expanded)
+                            .foregroundStyle(.green)
+                        
+                    }
+                    .symbolSize(100)
                     .symbol(BasicChartSymbolShape.diamond)
                     .foregroundStyle(.green)
                 
             }
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
+            .chartScrollTargetBehavior(.valueAligned(unit: 1))
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
@@ -1662,6 +1685,7 @@ struct AnalyticsView: View {
                 LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.hum)
                 )
+                .cornerRadius(10)
                 
                 .foregroundStyle(.blue)
               
@@ -1670,8 +1694,20 @@ struct AnalyticsView: View {
                     )
                     .symbol(BasicChartSymbolShape.square)
                     .foregroundStyle(.blue)
+                    .cornerRadius(10)
+                    .annotation{
+                        Text("\(String(format:"%.0f" , content.hum))%")
+                            .font(.caption2)
+                            .fontWidth(.expanded)
+                            .foregroundStyle(.blue)
+                        
+                    }
+                    .symbolSize(100)
                 
             }
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
+            .chartScrollTargetBehavior(.valueAligned(unit: 1))
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
@@ -1705,19 +1741,37 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
-                LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
-                         y: .value("second" , content.wind)
-                )
-                
-                .foregroundStyle(.yellow)
               
+                    LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                             y: .value("second" , content.wind)
+                    )
+                    .cornerRadius(10)
+                    .foregroundStyle(.yellow)
+                    
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.wind)
                     )
+                    .cornerRadius(10)
                     .symbol(BasicChartSymbolShape.triangle)
                     .foregroundStyle(.yellow)
+                    
+                    .annotation{
+                        Text("\(String(format:"%.1f",content.wind))m/s")
+                            .font(.caption2)
+                            .fontWidth(.expanded)
+                            .foregroundStyle(.yellow)
+                        
+                    }
+                    .symbolSize(100)
+                    
+                
+                
+                    
                 
             }
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
+            .chartScrollTargetBehavior(.valueAligned(unit: 1))
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
@@ -1816,10 +1870,12 @@ struct newscreen:View{
                     Button(action:{
                         Task{
                             do{
+                                
                                 hweather =  try await weathermanager.gethourlyWeather(loc: CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
                                 dweather =  try await weathermanager.getdailyWeather(loc:CLLocationCoordinate2D(latitude:weather.coord.lat, longitude:weather.coord.lon))
                                 alpha = 24 - Int(convertsun2(sunvalue: hweather!.list[0].dt, sunzone: weather.timezone))!
                                 showdetailsscreen.toggle()
+                                
                                 
                             }
                             catch{
@@ -2147,6 +2203,30 @@ class ElevationManager{
         let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
         return(decoded)
     }
+    func getElevationfast(loc:[CLLocationCoordinate2D])  async throws-> ResponseBody2{
+        var lat : String = ""
+        var lng : String = ""
+        for i in 0...loc.count-1{
+            lat += String(loc[i].latitude)
+            
+            lng += String(loc[i].longitude)
+            if i != loc.count-1{
+                lat += ","
+                lng += ","
+            }
+        }
+        
+        
+        let urlString = "https://api.open-meteo.com/v1/elevation?latitude=\(lat)&longitude=\(lng)"
+        guard let url = URL(string: urlString) else {
+            fatalError("Cannot get elevation data")
+        }
+        let urlrequest = URLRequest(url: url)
+        let (data, response) = try await URLSession.shared.data(for: urlrequest)
+       guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching elevation data latitude=\(lat)&longitude=\(lng)") }
+        let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
+        return(decoded)
+    }
 }
 //MARK: UISYMBOL
 struct Symbol :Identifiable{
@@ -2344,6 +2424,7 @@ struct ResponseBody: Decodable {
     }
 }
 
+
 // Update the computed properties for MainResponse
 extension ResponseBody.MainResponse {
     var feelsLike: Double { return feels_like }
@@ -2393,22 +2474,29 @@ extension ContentView{
         
         let incrementlat = (polygonviewer.polycoordinates[1].latitude - polygonviewer.polycoordinates[0].latitude) / (Double(amount) ?? 13)
         let incrementlong = (polygonviewer.polycoordinates[1].longitude - polygonviewer.polycoordinates[0].longitude) / (Double(amount) ?? 13)
+        var coordinateselev : [CLLocationCoordinate2D] = []
+        var elevationData : ResponseBody2?
         analyzed = true
         if poly < 3 {
             for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
-                let location = CLLocationCoordinate2D(latitude: lat, longitude: long)
+                coordinateselev.append(CLLocationCoordinate2D(latitude: lat, longitude: long))
+                
+            }
+            for i in 0...coordinateselev.count-1{
                 
                 do {
-                    let weatherData = try await weathermanager.getOptimizedWeather(loc: location)
-                    let elevationData = try await elevationmanager.getElevation(loc: location)
-                    
+                    let weatherData = try await weathermanager.getOptimizedWeather(loc: coordinateselev[i])
+                    if i == 0 {
+                        elevationData = try await elevationmanager.getElevationfast(loc: coordinateselev)
+                    }
                     tablecontent.append(Analytics(
-                        lat: Double(String(format: "%.3f", lat))!,
-                        lng: Double(String(format: "%.3f", long))!,
+                        lat: Double(String(format: "%.3f", coordinateselev[i].latitude))!,
+                        lng: Double(String(format: "%.3f", coordinateselev[i].longitude))!,
                         temp: (weatherData.main.temp - 273.15),
-                        elev: elevationData.elevation[0],
+                        elev: elevationData!.elevation[i],
                         hum: Double(weatherData.main.humidity),
                         wind: weatherData.wind.speed)
+                                        
                     )
                 } catch {
                     print("error occurred")
@@ -2418,17 +2506,19 @@ extension ContentView{
     
     else {
         for coordinate in polygonviewer.polycoordinates{
-          
-            
+            coordinateselev.append(CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude))
+        }
+        for i in 0...coordinateselev.count-1{
             do {
-                let weatherData = try await weathermanager.getOptimizedWeather(loc: coordinate)
-                let elevationData = try await elevationmanager.getElevation(loc: coordinate)
-                
+                let weatherData = try await weathermanager.getOptimizedWeather(loc: coordinateselev[i])
+                if i == 0{
+                     elevationData = try await elevationmanager.getElevationfast(loc: coordinateselev)
+                }
                 tablecontent.append(Analytics(
-                    lat: Double(String(format: "%.3f", coordinate.latitude))!,
-                    lng: Double(String(format: "%.3f", coordinate.longitude))!,
+                    lat: Double(String(format: "%.3f", coordinateselev[i].latitude))!,
+                    lng: Double(String(format: "%.3f", coordinateselev[i].longitude))!,
                     temp: (weatherData.main.temp - 273.15),
-                    elev: elevationData.elevation[0],
+                    elev: elevationData!.elevation[i],
                     hum: Double(weatherData.main.humidity),
                     wind: weatherData.wind.speed)
                 )
