@@ -70,6 +70,8 @@ struct ContentView: View{
     @State var centerlockcoord = CLLocationCoordinate2D(latitude:0,longitude:0)
     @State var showsymbolscreen : Bool = false
     @State var centersymbol : [Symbol] = []
+    @State var belowzerotemp : Bool = false
+    @State var belowfiftytemp : Bool = false
     var body :some View{
         
         
@@ -915,6 +917,8 @@ struct ContentView: View{
         }
         .onChange(of:amount){
             tablecontent = []
+            belowzerotemp = false
+            belowfiftytemp = false
             analyzed = false
         }
         .overlay(alignment:.bottom){
@@ -1042,6 +1046,8 @@ struct ContentView: View{
                    
                     tablemarkeron = false
                     tablecontent = []
+                    belowzerotemp = false
+                    belowfiftytemp = false
                     analyzed = false
                     if routemode == true{
                         route = []
@@ -1151,7 +1157,7 @@ struct ContentView: View{
                         
                     })
                     .fullScreenCover(isPresented: $showanalytics){
-                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername,poly:$poly)
+                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername,poly:$poly,belowzerotemp:$belowzerotemp,belowfiftytemp:$belowfiftytemp)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     }
                     
@@ -1240,6 +1246,8 @@ struct ContentView: View{
                             
                             tablemarkeron = false
                             tablecontent = []
+                            belowzerotemp = false
+                            belowfiftytemp = false
                             analyzed = false
                             
                             
@@ -1277,6 +1285,8 @@ struct ContentView: View{
                             firstD = 0
                             tablemarkeron = false
                             tablecontent = []
+                            belowzerotemp = false
+                            belowfiftytemp = false
                             analyzed = false
                             
                             route = []
@@ -1515,6 +1525,8 @@ struct AnalyticsView: View {
     @Binding var markercolor : Color
     @Binding var markername : Double
     @Binding var poly : Int
+    @Binding var belowzerotemp : Bool
+    @Binding var belowfiftytemp : Bool
     var body: some View {
         HStack{
             Text(poly > 2 ? "Multipoint Analytics" : " Segmented Analytics;")
@@ -1554,10 +1566,18 @@ struct AnalyticsView: View {
                 .shadow(radius: 20)
             
                 Chart(tablecontent){ content in
+                    AreaMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
+                             yStart: .value("second" , content.temp),
+                             yEnd: . value("end",  belowzerotemp ? (belowfiftytemp ? -100 : -50): 0 )
+                    )
+                    .interpolationMethod(.cardinal)
+                    .cornerRadius(10)
+                    .foregroundStyle(.red.opacity(0.1))
                     
                         LineMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                                  y: .value("second" , content.temp)
                         )
+                        .interpolationMethod(.cardinal)
                         .cornerRadius(10)
                         .foregroundStyle(.red)
                         
@@ -1566,6 +1586,7 @@ struct AnalyticsView: View {
                         PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                                   y: .value("second" , content.temp)
                         )
+                        .interpolationMethod(.cardinal)
                         .cornerRadius(10)
                         .annotation{
                             Text("\(String(format:"%.1f" , content.temp))°C")
@@ -1580,11 +1601,15 @@ struct AnalyticsView: View {
                         .foregroundStyle(.red)
                     
                 }
+                .chartYAxis{
+                    AxisMarks(position:.leading)
+                }
                 
-                .chartScrollableAxes(.horizontal)
+                
                 .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
                 .chartScrollTargetBehavior(.valueAligned(unit: 1))
-               
+                .chartScrollableAxes(.horizontal)
+
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
@@ -1612,6 +1637,8 @@ struct AnalyticsView: View {
            
             }
             
+           
+            
             
          
         }
@@ -1627,15 +1654,25 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
+                AreaMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                         yStart: .value("second" , content.elev),
+                         yEnd: . value("end",0)
+                         
+                )
+                .interpolationMethod(.cardinal)
+                .cornerRadius(10)
+                .foregroundStyle(.green.opacity(0.1))
                 LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.elev)
                 )
+                .interpolationMethod(.cardinal)
                 .cornerRadius(10)
                 .foregroundStyle(.green)
               
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.elev)
                     )
+                    .interpolationMethod(.cardinal)
                     .cornerRadius(10)
                     .annotation{
                         Text("\(String(format:"%.0f" , content.elev))m")
@@ -1649,6 +1686,10 @@ struct AnalyticsView: View {
                     .foregroundStyle(.green)
                 
             }
+            .chartYAxis{
+                AxisMarks(position:.leading)
+            }
+            
             .chartScrollableAxes(.horizontal)
             .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
             .chartScrollTargetBehavior(.valueAligned(unit: 1))
@@ -1687,9 +1728,18 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
+                AreaMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                         yStart: .value("second" , content.hum),
+                         yEnd: . value("end",0)
+                )
+                .interpolationMethod(.cardinal)
+                .cornerRadius(10)
+                
+                .foregroundStyle(.blue.opacity(0.1))
                 LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          y: .value("second" , content.hum)
                 )
+                .interpolationMethod(.cardinal)
                 .cornerRadius(10)
                 
                 .foregroundStyle(.blue)
@@ -1697,6 +1747,7 @@ struct AnalyticsView: View {
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.hum)
                     )
+                    .interpolationMethod(.cardinal)
                     .symbol(BasicChartSymbolShape.square)
                     .foregroundStyle(.blue)
                     .cornerRadius(10)
@@ -1710,6 +1761,10 @@ struct AnalyticsView: View {
                     .symbolSize(100)
                 
             }
+            .chartYAxis{
+                AxisMarks(position:.leading)
+            }
+            
             .chartScrollableAxes(.horizontal)
             .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
             .chartScrollTargetBehavior(.valueAligned(unit: 1))
@@ -1746,10 +1801,17 @@ struct AnalyticsView: View {
                 .foregroundStyle(.black.opacity(0.7))
                 .shadow(radius: 20)
             Chart(tablecontent){ content in
-              
+                AreaMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
+                         yStart: .value("second" , content.wind),
+                         yEnd: .value("end",0)
+                )
+                .interpolationMethod(.cardinal)
+                .cornerRadius(10)
+                .foregroundStyle(.yellow.opacity(0.1))
                     LineMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                              y: .value("second" , content.wind)
                     )
+                    .interpolationMethod(.cardinal)
                     .cornerRadius(10)
                     .foregroundStyle(.yellow)
                     
@@ -1757,6 +1819,7 @@ struct AnalyticsView: View {
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.wind)
                     )
+                    .interpolationMethod(.cardinal)
                     .cornerRadius(10)
                     .symbol(BasicChartSymbolShape.triangle)
                     .foregroundStyle(.yellow)
@@ -1775,6 +1838,10 @@ struct AnalyticsView: View {
                     
                 
             }
+            .chartYAxis{
+                AxisMarks(position:.leading)
+            }
+            
             .chartScrollableAxes(.horizontal)
             .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
             .chartScrollTargetBehavior(.valueAligned(unit: 1))
@@ -2496,9 +2563,29 @@ extension ContentView{
         analyzed = true
         coordinateselev.removeAll()
         if poly < 3 {
-            for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
-                coordinateselev.append(CLLocationCoordinate2D(latitude: lat, longitude: long))
+            if incrementlat == 0 && incrementlong != 0 {
+                for long in  stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong) {
+                    coordinateselev.append(CLLocationCoordinate2D(latitude: polygonviewer.polycoordinates[0].latitude, longitude: long))
+                    
+                }
+            }
+            else if incrementlat != 0 && incrementlong == 0 {
+                for lat in  stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat) {
+                    coordinateselev.append(CLLocationCoordinate2D(latitude:lat, longitude: polygonviewer.polycoordinates[0].longitude ))
+                    
+                }
+            }
+            else if incrementlat == 0 && incrementlong == 0 {
+             
+                    coordinateselev.append(CLLocationCoordinate2D(latitude:polygonviewer.polycoordinates[0].latitude, longitude: polygonviewer.polycoordinates[0].longitude ))
+                    
                 
+            }
+            else{
+                for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
+                    coordinateselev.append(CLLocationCoordinate2D(latitude: lat, longitude: long))
+                    
+                }
             }
             for i in 0...coordinateselev.count-1{
                 
@@ -2516,6 +2603,18 @@ extension ContentView{
                         wind: weatherData.wind.speed)
                                         
                     )
+                    if weatherData.main.temp - 273.15 < 0 {
+                        
+                        
+                            belowzerotemp = true
+                        
+                    }
+                    if weatherData.main.temp - 273.15 < -50 {
+                        belowfiftytemp = true
+                        
+                    }
+                   
+                    
                 } catch {
                     print("error occurred")
                 }
@@ -2628,6 +2727,7 @@ extension ContentView{
 
 
 extension AnalyticsView {
+    
     func convertStringToCLLocationCoordinate(_ coordinateString: String) -> CLLocationCoordinate2D? {
         // Split the string into latitude and longitude components
         let components = coordinateString.split(whereSeparator: \.isNewline)
