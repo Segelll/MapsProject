@@ -1503,6 +1503,7 @@ struct ContentView: View{
     }
         
 }
+
 // MARK: ANALYTICSVIEW
 struct AnalyticsView: View {
     @Binding var cameraposition: MapCameraPosition
@@ -1560,6 +1561,8 @@ struct AnalyticsView: View {
                         .cornerRadius(10)
                         .foregroundStyle(.red)
                         
+                    
+                        
                         PointMark(x: .value("first" , "\(content.lat)\n\(content.lng)"),
                                   y: .value("second" , content.temp)
                         )
@@ -1569,6 +1572,7 @@ struct AnalyticsView: View {
                                 .font(.caption2)
                                 .fontWidth(.expanded)
                                 .foregroundStyle(.red)
+                           
                             
                         }
                         .symbolSize(100)
@@ -1576,16 +1580,16 @@ struct AnalyticsView: View {
                         .foregroundStyle(.red)
                     
                 }
+                
                 .chartScrollableAxes(.horizontal)
                 .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
                 .chartScrollTargetBehavior(.valueAligned(unit: 1))
                
-            
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
              
-                            .onTapGesture { location in
+                        .onTapGesture{ location in
                                     
                                   
                                    
@@ -1607,6 +1611,7 @@ struct AnalyticsView: View {
                 }
            
             }
+            
             
          
         }
@@ -1748,23 +1753,24 @@ struct AnalyticsView: View {
                     .cornerRadius(10)
                     .foregroundStyle(.yellow)
                     
+                    
                     PointMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                               y: .value("second" , content.wind)
                     )
                     .cornerRadius(10)
                     .symbol(BasicChartSymbolShape.triangle)
                     .foregroundStyle(.yellow)
-                    
+                   
                     .annotation{
-                        Text("\(String(format:"%.1f",content.wind))m/s")
-                            .font(.caption2)
-                            .fontWidth(.expanded)
-                            .foregroundStyle(.yellow)
+                        
+                            Text("\(String(format:"%.1f",content.wind))m/s")
+                                .font(.caption2)
+                                .fontWidth(.expanded)
+                                .foregroundStyle(.yellow)
                         
                     }
                     .symbolSize(100)
                     
-                
                 
                     
                 
@@ -1772,9 +1778,16 @@ struct AnalyticsView: View {
             .chartScrollableAxes(.horizontal)
             .chartXVisibleDomain(length: tablecontent.count > 40 ? 40: tablecontent.count)
             .chartScrollTargetBehavior(.valueAligned(unit: 1))
+            
+            
+            
+                      
+                      
+                      
             .chartOverlay { proxy in
                 GeometryReader { geometry in
                     Rectangle().fill(.clear).contentShape(Rectangle())
+                        
                         .onTapGesture { location in
                                   
                                    
@@ -2205,13 +2218,17 @@ class ElevationManager{
     }
     func getElevationfast(loc:[CLLocationCoordinate2D])  async throws-> ResponseBody2{
         var lat : String = ""
+        lat = ""
         var lng : String = ""
+        lng = ""
         for i in 0...loc.count-1{
             lat += String(loc[i].latitude)
-            
-            lng += String(loc[i].longitude)
             if i != loc.count-1{
                 lat += ","
+            }
+            lng += String(loc[i].longitude)
+                if i != loc.count-1{
+                
                 lng += ","
             }
         }
@@ -2477,6 +2494,7 @@ extension ContentView{
         var coordinateselev : [CLLocationCoordinate2D] = []
         var elevationData : ResponseBody2?
         analyzed = true
+        coordinateselev.removeAll()
         if poly < 3 {
             for (lat, long) in zip(stride(from: polygonviewer.polycoordinates[0].latitude, through: polygonviewer.polycoordinates[1].latitude, by: incrementlat), stride(from: polygonviewer.polycoordinates[0].longitude, through: polygonviewer.polycoordinates[1].longitude, by: incrementlong)) {
                 coordinateselev.append(CLLocationCoordinate2D(latitude: lat, longitude: long))
