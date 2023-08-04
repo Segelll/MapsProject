@@ -72,6 +72,7 @@ struct ContentView: View{
     @State var centersymbol : [Symbol] = []
     @State var belowzerotemp : Bool = false
     @State var belowfiftytemp : Bool = false
+    @State var belowzeroelev :Bool = false
     var body :some View{
         
         
@@ -1157,7 +1158,7 @@ struct ContentView: View{
                         
                     })
                     .fullScreenCover(isPresented: $showanalytics){
-                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername,poly:$poly,belowzerotemp:$belowzerotemp,belowfiftytemp:$belowfiftytemp)
+                        AnalyticsView(cameraposition:$cameraPosition, tablecontent: $tablecontent,showanalytics:$showanalytics,amount:$amount,tablecoord:$tablecoord,tablemarkeron:$tablemarkeron,markercolor: $markercolor,markername:$markername,poly:$poly,belowzerotemp:$belowzerotemp,belowfiftytemp:$belowfiftytemp,belowzeroelev:$belowzeroelev)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                     }
                     
@@ -1527,6 +1528,7 @@ struct AnalyticsView: View {
     @Binding var poly : Int
     @Binding var belowzerotemp : Bool
     @Binding var belowfiftytemp : Bool
+    @Binding var belowzeroelev :Bool
     var body: some View {
         HStack{
             Text(poly > 2 ? "Multipoint Analytics" : " Segmented Analytics;")
@@ -1656,7 +1658,7 @@ struct AnalyticsView: View {
             Chart(tablecontent){ content in
                 AreaMark(x: .value("first" ,"\(content.lat)\n\(content.lng)"),
                          yStart: .value("second" , content.elev),
-                         yEnd: . value("end",0)
+                         yEnd: . value("end",belowzeroelev ? -1000 : 0)
                          
                 )
                 .interpolationMethod(.cardinal)
@@ -2612,6 +2614,9 @@ extension ContentView{
                     if weatherData.main.temp - 273.15 < -50 {
                         belowfiftytemp = true
                         
+                    }
+                    if elevationData!.elevation[i] < 0 {
+                        belowzeroelev = true
                     }
                    
                     
