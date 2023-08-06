@@ -1402,7 +1402,7 @@ struct ContentView: View{
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .padding(10)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(.red))
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.red.opacity(0.3)))
                         .shadow(radius: 20)
                         .offset(x:-28,y:-10)
                         
