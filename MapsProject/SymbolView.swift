@@ -45,7 +45,7 @@ struct SymbolView: View {
                     .padding(.top,1)
                     .onSubmit {
                         if nameentered != ""{
-                            centersymbol.append( Symbol( name:"",
+                            centersymbol.append( Symbol( name:"mappin",
                                                          coordinate:centeronend!,
                                                          elevation: elevation!.elevation[0],
                                                          username: nameentered,

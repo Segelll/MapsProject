@@ -81,10 +81,10 @@ struct ContentView: View{
             if centersymbol.count > 0 {
                 ForEach(centersymbol) { symbol in
                     Annotation(symbol.username,coordinate:symbol.coordinate){
-                        if symbol.name != ""{
+                     
                             Image(systemName:symbol.name)
                                 .foregroundStyle(satellitebutton ? .white : .black)
-                        }
+                        
                     }
                 }
             }
