@@ -384,15 +384,16 @@ struct DetailsView: View {
                                                 .padding(2)
                                                 HStack{
                                                     Image(systemName: "wind")
-                                                    Text("\(String(format:"%.1f", weather.wind.speed))(n/a)m/s")
+                                                    Text("\(String(format:"%.1f", weather.wind.speed))(\((String(format:"%.1f", weather.wind.gust ?? weather.wind.speed))))m/s")
                                                         .fontWidth(.expanded)
                                                         .font(.caption2)
                                                         .bold()
                                                 }
                                                 .padding(2)
                                                 HStack{
-                                                    Image(systemName: "angle")
-                                                    Text("n/a°")
+                                                    Image(systemName: "location.north.line.fill")
+                                                        .rotationEffect(Angle(degrees: Double(weather.wind.deg)))
+                                                    Text("\(String(weather.wind.deg))°")
                                                         .fontWidth(.expanded)
                                                         .font(.caption2)
                                                         .bold()
@@ -657,7 +658,8 @@ struct DetailsView: View {
                                                 }
                                                 .padding(2)
                                                 HStack{
-                                                    Image(systemName: "angle")
+                                                    Image(systemName: "location.north.line.fill")
+                                                        .rotationEffect(Angle(degrees: Double(hweather!.list[i].wind.deg)))
                                                     Text("\(String( hweather!.list[i].wind.deg))°")
                                                         .fontWidth(.expanded)
                                                         .font(.caption2)
@@ -1043,7 +1045,8 @@ struct DetailsView: View {
                                         }
                                         .padding(2)
                                         HStack{
-                                            Image(systemName: "angle")
+                                            Image(systemName: "location.north.line.fill")
+                                                .rotationEffect(Angle(degrees: Double(dweather!.list[a].deg)))
                                             Text("\(String( dweather!.list[a].deg))°")
                                                 .fontWidth(.expanded)
                                                 .font(.caption2)

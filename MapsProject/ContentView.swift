@@ -20,7 +20,6 @@ struct ContentView: View{
     @State var markeron = false
     @State var redmode = false
     @State var weather : ResponseBody?
-    @State var weathername : ResponseName?
     var weathermanager = WeatherManager()
     @State var weatherfound = false
     @State var hybridmode : MapStyle = .standard
@@ -131,7 +130,7 @@ struct ContentView: View{
                 
                 
                 if tapped == true{
-                    Marker(weathername?.name ?? "",image:centerlock ? "custom.lock.fill.2.badge.checkmark": "thermometer.brakesignal", coordinate:centerlock ? centerlockcoord : centeronend ?? locationViewer.currentcoordinate)
+                    Marker(weather?.name ?? "",image:centerlock ? "custom.lock.fill.2.badge.checkmark": "thermometer.brakesignal", coordinate:centerlock ? centerlockcoord : centeronend ?? locationViewer.currentcoordinate)
                         .tint(.indigo.opacity(0.8))
                     
                 }
@@ -522,7 +521,7 @@ struct ContentView: View{
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
                                        
                                     
-                                
+                                shownewscreen.toggle()
                                 
                             }
                             catch{
@@ -538,9 +537,6 @@ struct ContentView: View{
                                 if mapselection == nil{
                                    
                                     weather = try await weathermanager.getWeather(loc: tapped == false ? locationViewer.currentcoordinate : (centerlock ? centerlockcoord :centeronend!))
-                                     
-                                        
-                                   
                                     weatherfound = true
                                     let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                        let dateFormatter = DateFormatter()
@@ -549,9 +545,7 @@ struct ContentView: View{
                                     dateString = dateFormatter.string(from: dateInTimeZone!)
                                     shownewscreen.toggle()
                                 }
-                                else{
-                                    shownewscreen.toggle()
-                                }
+                             
                                 
                             }
                             catch{
@@ -573,12 +567,12 @@ struct ContentView: View{
                 },label:{
                     
                     if weatherfound == true{
-                        switch("\(weather!.weather[0].description)"){
+                        switch weather!.weather[0].description{
                         case "clear sky":
                             HStack{
                                 Image(systemName: "sun.max.fill")
                                     .foregroundStyle(.yellow)
-                                Text(weather!.weather[0].description)
+                                Text( weather!.weather[0].description)
                                     .fontWidth(.expanded)
                                     .font(.footnote)
                                     .foregroundStyle(searchmode ? .black.opacity(0.7) : .indigo.opacity(0.8))
@@ -790,7 +784,7 @@ struct ContentView: View{
                                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
-                                    
+
                                 
                                 
                             }
@@ -806,19 +800,20 @@ struct ContentView: View{
                         withAnimation{
                             placeredmode = false
                         }
-                        tapped = true
+                       
                         
                         Task{
                             do{
                                 
                                 weather = try await weathermanager.getWeather(loc: centerlock ? centerlockcoord :centeronend ?? locationViewer.currentcoordinate)
                                     weatherfound = true
-                                
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
                                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
+                                tapped = true
+                                
                             }
                             catch{
                                 print("error occured")
@@ -1443,14 +1438,8 @@ struct ContentView: View{
                         if mapselection == nil{
                             
                             
-                            weathername = try await weathermanager.getWeatherName(loc: centeronend ?? locationViewer.currentcoordinate)
-                            weatherfound = true
-                            let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
-                               let dateFormatter = DateFormatter()
-                               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-                           dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
-                            dateString = dateFormatter.string(from: dateInTimeZone!)
-                            
+                            weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+             
                         }
                         
                         
@@ -1997,18 +1986,41 @@ struct newscreen:View{
                         .bold()
                         .font(.subheadline)
                         .fontWidth(.expanded)
-                    
-                    Text(dateString ?? "")
+                    HStack{
+                        Text(dateString ?? "")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.caption)
-                    
-                    Text(weather.timezone/3600 > 0 ? "GMT+\(String(weather.timezone/3600))":"GMT\(String(weather.timezone/3600))" )
-                        .fontWidth(.expanded)
-                        .font(.footnote)
+                        
+                        Text(weather.timezone/3600 > 0 ? "'GMT+\(String(weather.timezone/3600))'":"'GMT\(String(weather.timezone/3600))'" )
+                            .fontWidth(.expanded)
+                            .font(.footnote)
+                    }
+                    HStack{
+                        HStack{
+                            Image(systemName: "sunrise.fill")
+                            Text(String(convertsun(sunvalue: weather.sys.sunrise, sunzone: weather.timezone)))
+                                .fontWidth(.expanded)
+                                .bold()
+                                .font(.caption2)
+                               
+                        }
+                           
+                        HStack{
+                            
+                            Text(String(convertsun(sunvalue: weather.sys.sunset, sunzone: weather.timezone)))
+                                .fontWidth(.expanded)
+                                .bold()
+                                .font(.caption2)
+                            Image(systemName: "sunset.fill")
+                        }
+                     
+                        
+                    }
                     Spacer()
                     
                 }
+                .padding(3)
                 
                 Spacer()
                 VStack{
@@ -2042,6 +2054,7 @@ struct newscreen:View{
                     }
                     Spacer()
                 }
+                .padding(3)
                 Spacer()
                 VStack(alignment: .leading){
                     Spacer()
@@ -2064,6 +2077,25 @@ struct newscreen:View{
                     }
                     .padding(1)
                     HStack{
+                        Image(systemName: "tornado")
+                        Text("\(String(format:"%.1f",weather.wind.gust != nil ?  weather.wind.gust! : weather.wind.speed ))m/s")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                            
+                    }
+                    .padding(1)
+                    HStack{
+                        Image(systemName: "location.north.line.fill")
+                            .rotationEffect(Angle(degrees: Double(weather.wind.deg)))
+                        Text("\(String(format:"%.0f", Double(weather.wind.deg)))°")
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                            
+                    }
+                    .padding(1)
+                    HStack{
                         Image(systemName: "cloud.fill")
                         Text("\(String(weather.clouds.all))%")
                             .fontWidth(.expanded)
@@ -2079,27 +2111,11 @@ struct newscreen:View{
                             .font(.caption2)
                     }
                         .padding(1)
-                    HStack{
-                        Image(systemName: "sunrise.fill")
-                        Text(String(convertsun(sunvalue: weather.sys.sunrise, sunzone: weather.timezone)))
-                            .fontWidth(.expanded)
-                            .bold()
-                            .font(.caption2)
-                           
-                    }
-                        .padding(1)
-                    HStack{
-                        Image(systemName: "sunset.fill")
-                        Text(String(convertsun(sunvalue: weather.sys.sunset, sunzone: weather.timezone)))
-                            .fontWidth(.expanded)
-                            .bold()
-                            .font(.caption2)
-                    }
-                        .padding(1)
-                 
+                  
                    
                     Spacer()
                 }
+                .padding(3)
                 
              
                   
@@ -2228,18 +2244,7 @@ class LocationViewer: NSObject, ObservableObject,CLLocationManagerDelegate{
     }
 }
 class WeatherManager{
-    func getWeatherName(loc:CLLocationCoordinate2D) async throws->ResponseName{
-        let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
-                let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
-        guard let url = URL(string: urlString) else {
-            fatalError("Cannot get weather data")
-        }
-        let urlrequest = URLRequest(url: url)
-        let (data, response) = try await URLSession.shared.data(for: urlrequest)
-        guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching weather data") }
-        let decoded = try JSONDecoder().decode(ResponseName.self, from: data)
-        return(decoded)
-    }
+
     func getWeather(loc:CLLocationCoordinate2D) async throws->ResponseBody{
         let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
                 let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
@@ -2332,9 +2337,7 @@ class ElevationManager{
         return(decoded)
     }
 }
-struct ResponseName : Codable{
-    let name: String
-}
+
 //MARK: UISYMBOL
 struct Symbol :Identifiable{
     let name : String
@@ -2527,8 +2530,8 @@ struct ResponseBody: Decodable {
     struct WindResponse: Decodable {
         let speed: Double
         //MARK: Causes performance issues
-       /* let deg : Int
-          let gust : Double */
+        let deg : Int
+        let gust : Double?
        
     }
 }
