@@ -12,6 +12,7 @@ struct SymbolView: View {
     @Binding var centeronend : CLLocationCoordinate2D?
     @Binding var elevation : ResponseBody2?
     @Binding var cameraPosition: MapCameraPosition
+    @State var nameentered : String = ""
     @State var applicablesymbol : [AppSymbol] = [
         AppSymbol (id:"figure.wave"),
         AppSymbol (id:"mappin"),
@@ -32,25 +33,49 @@ struct SymbolView: View {
         .pickerStyle(.segmented)
         .foregroundStyle(.black)
         if mode == 0 {
-            HStack{
-            ForEach(applicablesymbol) { symbol in
-                
-                    Button(action:{
-                        centersymbol.append( Symbol( name:symbol.id,
-                                                     coordinate:centeronend!,
-                                                     elevation: elevation!.elevation[0],
-                                                     id: UUID()))
-                    },label:{
-                        Image(systemName:symbol.id)
-                    })
+            VStack{
+                TextField("Symbol name",text: $nameentered)
+                    .font(.subheadline)
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                    .shadow(radius:20)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 170)
+                    .padding(.bottom,-2)
+                    .padding(.top,1)
+                    .onSubmit {
+                        if nameentered != ""{
+                            centersymbol.append( Symbol( name:"",
+                                                         coordinate:centeronend!,
+                                                         elevation: elevation!.elevation[0],
+                                                         username: nameentered,
+                                                         id: UUID()
+                                                       ))
+                        }
+                    }
+                HStack{
+                    ForEach(applicablesymbol) { symbol in
+                        
+                        Button(action:{
+                            centersymbol.append( Symbol( name:symbol.id,
+                                                         coordinate:centeronend!,
+                                                         elevation: elevation!.elevation[0],
+                                                         username: nameentered,
+                                                         id: UUID()
+                                                         ))
+                            nameentered = ""
+                        },label:{
+                            Image(systemName:symbol.id)
+                        })
+                    }
+                    
+                    
                 }
-                
-             
+                .padding(10)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                .foregroundStyle(.black)
+                .padding(5)
             }
-            .padding(10)
-            .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-            .foregroundStyle(.black)
-            .padding(10)
         }
         if mode == 1 {
             ScrollView(.vertical){
@@ -60,19 +85,33 @@ struct SymbolView: View {
                             Button(action:{
                                 cameraPosition = .region (MKCoordinateRegion(center: symbol.coordinate ,latitudinalMeters: 12500,longitudinalMeters: 12500))
                             },label:{
-                                Image(systemName:symbol.name)
-                                Text("\(String(format:"%.3f",symbol.coordinate.latitude))° , \(String(format:"%.3f",symbol.coordinate.longitude))° /")
-                                    .fontWidth(.expanded)
-                                    .font(.footnote)
-                                Text("\(String(format:"%.0f",symbol.elevation))m")
-                                    .fontWidth(.expanded)
-                                    .font(.footnote)
+                                VStack{
+                                    HStack{
+                                        
+                                        Image(systemName:symbol.name)
+                                        Text(symbol.username)
+                                            .fontWidth(.expanded)
+                                            .font(.footnote)
+                                            .foregroundStyle(.black)
+                                            .bold()
+                                    }
+                                    HStack{
+                                        Text("\(String(format:"%.3f",symbol.coordinate.latitude))° , \(String(format:"%.3f",symbol.coordinate.longitude))° /")
+                                            .fontWidth(.expanded)
+                                            .font(.footnote)
+                                            .foregroundStyle(.gray)
+                                        Text("\(String(format:"%.0f",symbol.elevation))m")
+                                            .fontWidth(.expanded)
+                                            .font(.footnote)
+                                            .foregroundStyle(.gray)
+                                    }
+                                }
                             })
                             Button(action:{
                                 centersymbol.removeAll { $0.id == symbol.id }
                             },label:{
                                 Text("Remove")
-                                    .foregroundStyle(.red)
+                                    .foregroundStyle(.red.opacity(0.7))
                                     .fontWidth(.expanded)
                                     .font(.footnote)
                                 
@@ -81,7 +120,8 @@ struct SymbolView: View {
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .foregroundStyle(.black)
-                        .padding(10)
+                        .padding(5)
+                        
                     }
                 }
             }

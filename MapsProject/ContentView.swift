@@ -80,9 +80,11 @@ struct ContentView: View{
         Map(position: $cameraPosition, selection:$mapselection){
             if centersymbol.count > 0 {
                 ForEach(centersymbol) { symbol in
-                    Annotation("",coordinate:symbol.coordinate){
-                        Image(systemName:symbol.name)
-                            .foregroundStyle(satellitebutton ? .white : .black)
+                    Annotation(symbol.username,coordinate:symbol.coordinate){
+                        if symbol.name != ""{
+                            Image(systemName:symbol.name)
+                                .foregroundStyle(satellitebutton ? .white : .black)
+                        }
                     }
                 }
             }
@@ -2319,7 +2321,9 @@ struct Symbol :Identifiable{
     let name : String
     let coordinate : CLLocationCoordinate2D
     let elevation : Double
+    let username : String
     let id: UUID
+    
 }
 
 struct Analytics:Identifiable {
