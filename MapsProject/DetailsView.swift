@@ -1076,7 +1076,7 @@ struct DetailsView: View {
                                             .bold()
                                     }
                                     .padding(.top,15)
-                                    .padding(2)
+                                    .padding(4)
                                     
                                     
                                 
