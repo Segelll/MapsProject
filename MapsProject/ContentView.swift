@@ -20,6 +20,7 @@ struct ContentView: View{
     @State var markeron = false
     @State var redmode = false
     @State var weather : ResponseBody?
+    @State var weathername : ResponseName?
     var weathermanager = WeatherManager()
     @State var weatherfound = false
     @State var hybridmode : MapStyle = .standard
@@ -130,7 +131,7 @@ struct ContentView: View{
                 
                 
                 if tapped == true{
-                    Marker(weather?.name ?? "",image:centerlock ? "custom.lock.fill.2.badge.checkmark": "thermometer.brakesignal", coordinate:centerlock ? centerlockcoord : centeronend ?? locationViewer.currentcoordinate)
+                    Marker(weathername?.name ?? "",image:centerlock ? "custom.lock.fill.2.badge.checkmark": "thermometer.brakesignal", coordinate:centerlock ? centerlockcoord : centeronend ?? locationViewer.currentcoordinate)
                         .tint(.indigo.opacity(0.8))
                     
                 }
@@ -546,6 +547,10 @@ struct ContentView: View{
                                        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
                                    dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                     dateString = dateFormatter.string(from: dateInTimeZone!)
+                                    shownewscreen.toggle()
+                                }
+                                else{
+                                    shownewscreen.toggle()
                                 }
                                 
                             }
@@ -555,7 +560,7 @@ struct ContentView: View{
                             
                         }
                     }
-                    shownewscreen.toggle()
+                   
                     if locationbuttonpressed == true && searchmode == true && placeredmode == false {
                         redmode = true
                         
@@ -1438,7 +1443,7 @@ struct ContentView: View{
                         if mapselection == nil{
                             
                             
-                            weather = try await weathermanager.getWeather(loc: centeronend ?? locationViewer.currentcoordinate)
+                            weathername = try await weathermanager.getWeatherName(loc: centeronend ?? locationViewer.currentcoordinate)
                             weatherfound = true
                             let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                let dateFormatter = DateFormatter()
@@ -2223,7 +2228,18 @@ class LocationViewer: NSObject, ObservableObject,CLLocationManagerDelegate{
     }
 }
 class WeatherManager{
-
+    func getWeatherName(loc:CLLocationCoordinate2D) async throws->ResponseName{
+        let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
+                let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            fatalError("Cannot get weather data")
+        }
+        let urlrequest = URLRequest(url: url)
+        let (data, response) = try await URLSession.shared.data(for: urlrequest)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching weather data") }
+        let decoded = try JSONDecoder().decode(ResponseName.self, from: data)
+        return(decoded)
+    }
     func getWeather(loc:CLLocationCoordinate2D) async throws->ResponseBody{
         let apiKey = "313317ad4e64155d5ee8a3481865ee8b"
                 let urlString = "https://api.openweathermap.org/data/2.5/weather?lat=\(loc.latitude)&lon=\(loc.longitude)&appid=\(apiKey)"
@@ -2315,6 +2331,9 @@ class ElevationManager{
         let decoded = try JSONDecoder().decode(ResponseBody2.self, from: data)
         return(decoded)
     }
+}
+struct ResponseName : Codable{
+    let name: String
 }
 //MARK: UISYMBOL
 struct Symbol :Identifiable{
