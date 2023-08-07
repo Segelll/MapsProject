@@ -309,7 +309,7 @@ struct ContentView: View{
                 })
                 
                 .popover(isPresented: $showdate){
-                    Text("\(Date().formatted(.dateTime.day().month().year().hour().minute().second()))")
+                    Text("\(Date().formatted(date: .complete, time: .omitted) )")
                         .fontWidth(.expanded)
                         .bold()
                         .italic()
@@ -368,7 +368,7 @@ struct ContentView: View{
                                 weatherfound = true
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
-                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
                                 shownewscreen.toggle()
@@ -478,7 +478,7 @@ struct ContentView: View{
                                         weatherfound = true
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
-                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
                                     
@@ -516,7 +516,7 @@ struct ContentView: View{
                                     
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
-                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
                                        
@@ -540,7 +540,7 @@ struct ContentView: View{
                                     weatherfound = true
                                     let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                        let dateFormatter = DateFormatter()
-                                       dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                       dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                    dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                     dateString = dateFormatter.string(from: dateInTimeZone!)
                                     shownewscreen.toggle()
@@ -729,7 +729,7 @@ struct ContentView: View{
                                     weatherfound = true
                                     let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                        let dateFormatter = DateFormatter()
-                                       dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                       dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                    dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                     dateString = dateFormatter.string(from: dateInTimeZone!)
                                     
@@ -781,7 +781,7 @@ struct ContentView: View{
                                     
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
-                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
 
@@ -809,7 +809,7 @@ struct ContentView: View{
                                     weatherfound = true
                                 let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                    let dateFormatter = DateFormatter()
-                                   dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                                   dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
                                 tapped = true
@@ -1479,7 +1479,7 @@ struct ContentView: View{
                             weatherfound = true
                             let dateInTimeZone = getCurrentDateInTimeZone(secondsFromGMT: weather!.timezone)
                                let dateFormatter = DateFormatter()
-                               dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+                               dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                            dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                             dateString = dateFormatter.string(from: dateInTimeZone!)
                             shownewscreen.toggle()
@@ -1986,16 +1986,14 @@ struct newscreen:View{
                         .bold()
                         .font(.subheadline)
                         .fontWidth(.expanded)
-                    HStack{
+                  
                         Text(dateString ?? "")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.caption)
                         
-                        Text(weather.timezone/3600 > 0 ? "'GMT+\(String(weather.timezone/3600))'":"'GMT\(String(weather.timezone/3600))'" )
-                            .fontWidth(.expanded)
-                            .font(.footnote)
-                    }
+                        
+                    
                     HStack{
                         HStack{
                             Image(systemName: "sunrise.fill")
@@ -2088,7 +2086,7 @@ struct newscreen:View{
                     HStack{
                         Image(systemName: "location.north.line.fill")
                             .rotationEffect(Angle(degrees: Double(weather.wind.deg)))
-                        Text("\(String(format:"%.0f", Double(weather.wind.deg)))°")
+                        Text("  \(String(weather.wind.deg))°")
                             .fontWidth(.expanded)
                             .bold()
                             .font(.caption2)
@@ -2111,8 +2109,14 @@ struct newscreen:View{
                             .font(.caption2)
                     }
                         .padding(1)
-                  
-                   
+                    HStack{
+                        Image(systemName:"clock.circle.fill")
+                        Text(weather.timezone/3600 > 0 ? "GMT+\(String(weather.timezone/3600))":"GMT\(String(weather.timezone/3600))" )
+                            .fontWidth(.expanded)
+                            .bold()
+                            .font(.caption2)
+                    }
+                    .padding(1)
                     Spacer()
                 }
                 .padding(3)

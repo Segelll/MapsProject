@@ -44,13 +44,18 @@ struct DetailsView: View {
                     .bold()
                     .font(.subheadline)
                     .fontWidth(.expanded)
+           
+                    Text(dateString ?? "...")
+                        .fontWidth(.expanded)
+                        .font(.caption)
+                        .bold()
+                    
+                        Text(weather.timezone/3600 > 0 ? "'GMT+\(String(weather.timezone/3600))'":"'GMT\(String(weather.timezone/3600))'")
+                            .fontWidth(.expanded)
+                            .font(.caption2)
+                            .bold()
+                    
                 
-                Text(dateString ?? "...")
-                    .fontWidth(.expanded)
-                    .font(.footnote)
-                Text(weather.timezone/3600 > 0 ? "(GMT +\(String(weather.timezone/3600)) Timezone)":"(GMT \(String(weather.timezone/3600)) Timezone)")
-                    .fontWidth(.expanded)
-                    .font(.footnote)
               /*  if mode == 0{
                     HStack{
                         Image(systemName: "sunrise.fill")
@@ -700,11 +705,11 @@ struct DetailsView: View {
                             }
                             HStack{
                                 Image(systemName: "sunrise.fill")
-                                Text(String(convertsun2(sunvalue:dweather!.list[a].sunrise,sunzone:weather.timezone)))
+                                Text( String(convertsun2(sunvalue:dweather!.list[a].sunrise,sunzone:weather.timezone)))
                                     .fontWidth(.expanded)
                                     .bold()
                                     .font(.caption2)
-                                Text(convertsun3(sunvalue:hweather!.list[range1].dt,sunzone:weather.timezone))
+                                Text("\(String(convertsun4(sunvalue:dweather!.list[a].dt,sunzone:weather.timezone))), \(String(convertsun3(sunvalue:hweather!.list[range1].dt,sunzone:weather.timezone)))")
                                     .fontWidth(.expanded)
                                     .font(.subheadline)
                                     .foregroundStyle(.black)
@@ -1054,13 +1059,24 @@ struct DetailsView: View {
                                         }
                                         
                                         .padding(2)
+                                        .padding(.bottom,1)
+                                        
                                     }
-                                    
-                                    Text(String(convertsun3(sunvalue:dweather!.list[a].dt,sunzone:weather.timezone)))
-                                        .fontWidth(.expanded)
-                                        .font(.title3)
-                                        .frame(width:190, height: 55)
-                                        .bold()
+                                        
+                                    VStack{
+                                        Text(String(convertsun4(sunvalue:dweather!.list[a].dt,sunzone:weather.timezone)))
+                                            .fontWidth(.expanded)
+                                            .font(.title3)
+                                            .textCase(.uppercase)
+                                            .bold()
+                                            
+                                        Text(String(convertsun3(sunvalue:dweather!.list[a].dt,sunzone:weather.timezone)))
+                                            .fontWidth(.expanded)
+                                            .font(.subheadline)
+                                            .bold()
+                                    }
+                                    .padding(.top,15)
+                                    .padding(2)
                                     
                                     
                                 
@@ -1112,13 +1128,7 @@ struct DetailsView: View {
     
 
 extension DetailsView {
-    func convertsun(sunvalue:Int,sunzone:Int) -> String{
-        let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
-        dateFormatter.dateFormat = "MMM d, HH:mm"
-        return dateFormatter.string(from: date)
-    }
+   
     func convertsun2(sunvalue:Int,sunzone:Int) -> String{
         let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
         let dateFormatter = DateFormatter()
@@ -1131,6 +1141,13 @@ extension DetailsView {
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
         dateFormatter.dateFormat = "MMM d"
+        return dateFormatter.string(from: date)
+    }
+    func convertsun4(sunvalue:Int,sunzone:Int) -> String{
+        let date = Date(timeIntervalSince1970: TimeInterval(sunvalue))
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: sunzone)
+        dateFormatter.dateFormat = "EEEE"
         return dateFormatter.string(from: date)
     }
     
