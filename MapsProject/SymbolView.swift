@@ -51,6 +51,7 @@ struct SymbolView: View {
                                                          username: nameentered,
                                                          id: UUID()
                                                        ))
+                            nameentered = ""
                         }
                     }
                 HStack{
