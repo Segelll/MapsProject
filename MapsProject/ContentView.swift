@@ -73,6 +73,7 @@ struct ContentView: View{
     @State var belowzerotemp : Bool = false
     @State var belowfiftytemp : Bool = false
     @State var belowzeroelev :Bool = false
+    @State var showpolyview : Bool = false
     var body :some View{
         
         
@@ -927,6 +928,22 @@ struct ContentView: View{
         .overlay(alignment:.bottom){
             HStack{
                 Spacer()
+                Button(action:{
+                    
+                        showselectionscreen.toggle()
+                },label:{
+                    Image(systemName:"gearshape.2.fill")
+                        .frame(width:55, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                        .foregroundStyle(.black)
+                })
+                .offset(y:-10)
+                .popover(isPresented: $showselectionscreen){
+                    
+                    SelectionScreen(selectkm: $selectkm)
+                    
+                }
                 //MARK: SYMBOL BUTTON
                 Button(action:{
                 
@@ -1273,11 +1290,11 @@ struct ContentView: View{
                         withAnimation{
                             poly = 0
                             polygonviewer.clearpoly()
-                           
+                            
                             midpoint = []
                             distance = []
                             total = 0.0
-                     
+                            
                             
                             polyon = false
                             a = ""
@@ -1293,7 +1310,7 @@ struct ContentView: View{
                             analyzed = false
                             
                             route = []
-                        
+                            
                         }
                     }, label:{
                         Image(systemName: "trash.fill")
@@ -1305,20 +1322,69 @@ struct ContentView: View{
                             .shadow(radius: 20)
                     })
                     .offset(y:-10)
+                    
                     Button(action:{
-                        showselectionscreen.toggle()
+                        showpolyview.toggle()
                     },label:{
-                        if polylinemode == false && routemode == false{
-                            
-                            let stringholder = String(format:"%.3f",total) + "m"
-                            let stringholderarea = String(format:"%.3f",regionarea) + "m2"
-                            let stringholderkm = String(format:"%.3f",total/1000) + "km"
-                            let stringholderkmarea = String(format:"%.3f",regionarea/1000000) + "km2"
-                            
-                            
-                            if selectkm == false{
-                               
-                                Text("Perimeter:\(stringholder)\nArea:\(stringholderarea)")
+                       
+                            if polylinemode == false && routemode == false{
+                                
+                                let stringholder = String(format:"%.3f",total) + "m"
+                                let stringholderarea = String(format:"%.3f",regionarea) + "m2"
+                                let stringholderkm = String(format:"%.3f",total/1000) + "km"
+                                let stringholderkmarea = String(format:"%.3f",regionarea/1000000) + "km2"
+                                
+                                
+                                if selectkm == false{
+                                    
+                                    Text("Perimeter:\(stringholder)\nArea:\(stringholderarea)")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.black)
+                                    
+                                        .frame(width:250, height: 55)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                        .shadow(radius: 20)
+                                    
+                                }
+                                else{
+                                    Text("Perimeter:\(stringholderkm)\nArea:\(stringholderkmarea)")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.black)
+                                    
+                                        .frame(width:250, height: 55)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                        .shadow(radius: 20)
+                                }
+                            }
+                            if polylinemode == true{
+                                let stringholder = String(format:"%.3f",total - firstD) + "m"
+                                let stringholderkm = String(format:"%.3f",(total-firstD)/1000) + "km"
+                                if selectkm == true{
+                                    Text("Length:\(stringholderkm)")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.black)
+                                    
+                                        .frame(width:250, height: 55)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                        .shadow(radius: 20)
+                                }
+                                else{
+                                    Text("Length:\(stringholder)")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .foregroundStyle(.black)
+                                    
+                                        .frame(width:250, height: 55)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                        .shadow(radius: 20)
+                                }
+                            }
+                            if routemode == true{
+                                let stringholder = selectkm ? String(format:"%.3f",(routelength ?? 0)/1000) + "km" : String(format:"%.0f",routelength ?? 0) + "m"
+                                Text("Route Length:\(stringholder)")
                                     .fontWidth(.expanded)
                                     .font(.footnote)
                                     .foregroundStyle(.black)
@@ -1326,64 +1392,33 @@ struct ContentView: View{
                                     .frame(width:250, height: 55)
                                     .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                                     .shadow(radius: 20)
-                                
                             }
-                            else{
-                                Text("Perimeter:\(stringholderkm)\nArea:\(stringholderkmarea)")
-                                    .fontWidth(.expanded)
-                                    .font(.footnote)
-                                    .foregroundStyle(.black)
-                                
-                                    .frame(width:250, height: 55)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                    .shadow(radius: 20)
-                            }
-                        }
-                        if polylinemode == true{
-                            let stringholder = String(format:"%.3f",total - firstD) + "m"
-                            let stringholderkm = String(format:"%.3f",(total-firstD)/1000) + "km"
-                            if selectkm == true{
-                                Text("Length:\(stringholderkm)")
-                                    .fontWidth(.expanded)
-                                    .font(.footnote)
-                                    .foregroundStyle(.black)
-                                
-                                    .frame(width:250, height: 55)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                    .shadow(radius: 20)
-                            }
-                            else{
-                                Text("Length:\(stringholder)")
-                                    .fontWidth(.expanded)
-                                    .font(.footnote)
-                                    .foregroundStyle(.black)
-                                
-                                    .frame(width:250, height: 55)
-                                    .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                    .shadow(radius: 20)
-                            }
-                        }
-                        if routemode == true{
-                            let stringholder = selectkm ? String(format:"%.3f",(routelength ?? 0)/1000) + "km" : String(format:"%.0f",routelength ?? 0) + "m"
-                            Text("Route Length:\(stringholder)")
-                                .fontWidth(.expanded)
-                                .font(.footnote)
-                                .foregroundStyle(.black)
-                            
-                                .frame(width:250, height: 55)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
-                                .shadow(radius: 20)
-                        }
+                        
+                   
                     })
                     .offset(y:-10)
-                    .popover(isPresented: $showselectionscreen){
-                        
-                        SelectionScreen(selectkm: $selectkm)
-                        
+                    .popover(isPresented: $showpolyview){
+                        ForEach(Range(0...poly-1)) { i in
+                                Button(action:{
+                                    cameraPosition = .region (MKCoordinateRegion(center: polygonviewer.polycoordinates[i] ,latitudinalMeters: 5000,longitudinalMeters: 5000))
+                                },label:{
+                                    Text("\(String(polygonviewer.polycoordinates[i].latitude))°, \(String(polygonviewer.polycoordinates[i].longitude))°")
+                                        .fontWidth(.expanded)
+                                        .font(.footnote)
+                                        .padding(10)
+                                        .background(RoundedRectangle(cornerRadius: 10).fill( i == poly-1 ? .green.opacity(0.5) : ( i == 0 ? .black.opacity(0.5) : .white)))
+                                            .foregroundStyle(i == 0 ? .white : .black)
+                                        .padding(5)
+                                })
+                             
+                            
+                        }
                     }
+                   
+                    
+                    
                 }
                 Spacer()
-              
                 Button(action:{
                     let firebaseAuth = Auth.auth()
                                     do {
@@ -1886,34 +1921,222 @@ struct AnalyticsView: View {
   
  
 struct SelectionScreen:View{
-    @Binding var selectkm :Bool
+    @Binding var selectkm : Bool
     var body:some View{
-            VStack{
+        VStack{
+            Text("for Time")
+                .fontWidth(.expanded)
+                .font(.footnote)
+                .foregroundStyle(.black)
+            
+                .frame(width:120, height: 55)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                .shadow(radius: 20)
+            HStack{
                 Button(action:{
-                  selectkm = true
+                    selectkm.toggle()
                 },label:{
-                    Text("Kilometer")
+                    Text("24h")
                         .fontWidth(.expanded)
                         .font(.footnote)
                         .foregroundStyle(.black)
                     
-                        .frame(width:120, height: 55)
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .shadow(radius: 20)
+                    Text("12h")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                        .shadow(radius: 20)
                 })
+            }
+        }
+        VStack{
+            Text("for Elevation")
+                .fontWidth(.expanded)
+                .font(.footnote)
+                .foregroundStyle(.black)
+            
+                .frame(width:120, height: 55)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                .shadow(radius: 20)
+            HStack{
                 Button(action:{
-                   selectkm = false
                 },label:{
-                    Text("Meter")
+                    Text("m")
                         .fontWidth(.expanded)
                         .font(.footnote)
                         .foregroundStyle(.black)
                     
-                        .frame(width:120, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    Text("Km")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    
+                    Text("yd")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                        .shadow(radius: 20)
+                    Text("mi")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                        .shadow(radius: 20)
+                    
+                    
+                })
+        }
+        VStack{
+            Text("for MapPins")
+                .fontWidth(.expanded)
+                .font(.footnote)
+                .foregroundStyle(.black)
+            
+                .frame(width:120, height: 55)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                .shadow(radius: 20)
+            HStack{
+                Button(action:{
+                    
+                },label:{
+                    Text("m")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    Text("Km")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    
+                    Text("yd")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                        .shadow(radius: 20)
+                    Text("mi")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.white)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                        .shadow(radius: 20)
+                    
+                    
+                })
+                Button(action:{
+                },label:{
+                    Text("Rad")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                    
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    Text("Deg")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
                         .background(RoundedRectangle(cornerRadius: 10).fill(.white))
                         .shadow(radius: 20)
                 })
             }
+        }
+                VStack{
+                    Text("for Weather")
+                        .fontWidth(.expanded)
+                        .font(.footnote)
+                        .foregroundStyle(.black)
+                    
+                        .frame(width:120, height: 55)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                        .shadow(radius: 20)
+                    HStack{
+                        Button(action:{
+                            
+                        },label:{
+                            Text("°C")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.black)
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            Text("°F")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.white)
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                                .shadow(radius: 20)
+                            Text("K")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.red)
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                        })
+                        Button(action:{
+                            
+                        },label:{
+                            Text("m/s")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.black)
+                            
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            Text("mph")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.white)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.black))
+                                .shadow(radius: 20)
+                        })
+                        Button(action:{
+                        },label:{
+                            Text("Rad")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.black)
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                            Text("Deg")
+                                .fontWidth(.expanded)
+                                .font(.footnote)
+                                .foregroundStyle(.black)
+                            
+                                .background(RoundedRectangle(cornerRadius: 10).fill(.white))
+                                .shadow(radius: 20)
+                        })
+                       
+                    }
+                }
+            
+        }
         
     }
 }
