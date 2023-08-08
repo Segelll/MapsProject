@@ -813,7 +813,7 @@ struct ContentView: View{
                                    dateFormatter.dateFormat = "EEEE, MMM d, HH:mm"
                                dateFormatter.timeZone = TimeZone(secondsFromGMT: weather!.timezone)
                                 dateString = dateFormatter.string(from: dateInTimeZone!)
-                                tapped = true
+                                
                                 
                             }
                             catch{
@@ -821,7 +821,7 @@ struct ContentView: View{
                             }
                             
                         }
-                        
+                        tapped = true
                     }
                     else{
                         if locationbuttonpressed == true {
