@@ -12,7 +12,9 @@ import FirebaseAuth
 import Charts
 struct ContentView: View{
     @AppStorage("uid") var userid: String = ""
-    @State var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 39.925533, longitude: 32.866287) ,latitudinalMeters: 12500,longitudinalMeters: 12500))
+    @State var cameraPosition: MapCameraPosition = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0) ,latitudinalMeters: 120500,longitudinalMeters: 120500))
+    @AppStorage("cam") var camerastring1 : String = ""
+    @AppStorage("cam2") var camerastring2 : String = ""
     @State var mapselection: MKMapItem?
     @State private var searchText = ""
     @State private var Destinationlocation = [MKMapItem]()
@@ -280,6 +282,7 @@ struct ContentView: View{
             
          
         }
+       
         
         
         
@@ -362,6 +365,7 @@ struct ContentView: View{
                         placeredmode = false
                     }
                     cameraPosition = .region (MKCoordinateRegion(center: locationViewer.currentcoordinate ,latitudinalMeters: 12500,longitudinalMeters: 12500))
+                    
                     if markeron == true{
                         Task{
                             do{
@@ -1456,13 +1460,16 @@ struct ContentView: View{
            
             
         }
+        .onAppear{
+            cameraPosition = .region (MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: Double(camerastring1)!, longitude: Double(camerastring2)! ) ,latitudinalMeters: 120500,longitudinalMeters: 120500))
+        }
         
         
        
         .onMapCameraChange(frequency: .continuous, { newcamera in
             centerlocation = newcamera.region.center
-        
-            
+            camerastring1 = "\(centerlocation!.latitude)"
+            camerastring2 = "\(centerlocation!.longitude)"
             
         })
         .onMapCameraChange(frequency: .onEnd, { newcamera in
@@ -2373,6 +2380,7 @@ struct newscreen:View{
                    Task {
                            elevation = try await elevationmanager.getElevation(loc: CLLocationCoordinate2D(latitude: weather.coord.lat, longitude: weather.coord.lon))
                    }
+               
                }
        
         
