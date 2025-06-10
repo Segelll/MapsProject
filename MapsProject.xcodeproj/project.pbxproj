@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E154AA62DF89A8D00770810 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0E154AA52DF89A8300770810 /* Secrets.plist */; };
 		0E3E4B922DF861C200E866EB /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B912DF861C200E866EB /* AnalyticsView.swift */; };
 		0E3E4B942DF861CC00E866EB /* SelectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B932DF861CC00E866EB /* SelectionScreen.swift */; };
 		0E3E4B962DF861D200E866EB /* newscreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B952DF861D200E866EB /* newscreen.swift */; };
@@ -49,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E154AA52DF89A8300770810 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
 		0E3E4B912DF861C200E866EB /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
 		0E3E4B932DF861CC00E866EB /* SelectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionScreen.swift; sourceTree = "<group>"; };
 		0E3E4B952DF861D200E866EB /* newscreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = newscreen.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 		ECDF33E52A53E5E400545CEE /* MapsProject */ = {
 			isa = PBXGroup;
 			children = (
+				0E154AA52DF89A8300770810 /* Secrets.plist */,
 				0E3E4BAF2DF8683000E866EB /* DataModels.swift */,
 				0E3E4BA92DF867C800E866EB /* LocationViewer.swift */,
 				0E3E4B9D2DF861E800E866EB /* ElevationManager.swift */,
@@ -283,6 +286,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECDF33EE2A53E5E600545CEE /* Preview Assets.xcassets in Resources */,
+				0E154AA62DF89A8D00770810 /* Secrets.plist in Resources */,
 				ECDF33EB2A53E5E600545CEE /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -521,7 +525,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -563,7 +567,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

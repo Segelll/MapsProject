@@ -1,7 +1,7 @@
 import Foundation
 import CoreLocation
 
-class ElevationManager{
+actor ElevationManager {
     func getElevation(loc:CLLocationCoordinate2D)  async throws-> ResponseBody2{
       //  let urlString = "https://api.open-elevation.com/api/v1/lookup?locations=\(loc.latitude),\(loc.longitude)"
         let urlString = "https://api.open-meteo.com/v1/elevation?latitude=\(loc.latitude)&longitude=\(loc.longitude)"
