@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E3E4B922DF861C200E866EB /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B912DF861C200E866EB /* AnalyticsView.swift */; };
+		0E3E4B942DF861CC00E866EB /* SelectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B932DF861CC00E866EB /* SelectionScreen.swift */; };
+		0E3E4B962DF861D200E866EB /* newscreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B952DF861D200E866EB /* newscreen.swift */; };
+		0E3E4B982DF861D800E866EB /* polygonViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B972DF861D800E866EB /* polygonViewer.swift */; };
+		0E3E4B9C2DF861E300E866EB /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B9B2DF861E300E866EB /* WeatherManager.swift */; };
+		0E3E4B9E2DF861E800E866EB /* ElevationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4B9D2DF861E800E866EB /* ElevationManager.swift */; };
+		0E3E4BAA2DF867C800E866EB /* LocationViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4BA92DF867C800E866EB /* LocationViewer.swift */; };
+		0E3E4BB02DF8683300E866EB /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3E4BAF2DF8683000E866EB /* DataModels.swift */; };
 		EC200E7A2A77990A00BB8E5B /* DetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC200E792A77990A00BB8E5B /* DetailsView.swift */; };
 		EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */ = {isa = PBXBuildFile; fileRef = EC52966F2A67D993000E03EB /* Authorization(View).swift */; };
 		EC5296722A67DC35000E03EB /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC5296712A67DC35000E03EB /* String.swift */; };
@@ -19,9 +27,6 @@
 		ECDF33FA2A53E5E600545CEE /* MapsProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF33F92A53E5E600545CEE /* MapsProjectTests.swift */; };
 		ECDF34042A53E5E600545CEE /* MapsProjectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF34032A53E5E600545CEE /* MapsProjectUITests.swift */; };
 		ECDF34062A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDF34052A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift */; };
-		ECEA74F52A668028000CF4E4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */; };
-		ECEA74F82A66819F000CF4E4 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECEA74F72A66819F000CF4E4 /* FirebaseAuth */; };
-		ECEA74FA2A66819F000CF4E4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */; };
 		ECEA74FC2A66837A000CF4E4 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA74FB2A66837A000CF4E4 /* LoginView.swift */; };
 		ECEA74FE2A66839F000CF4E4 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */; };
 /* End PBXBuildFile section */
@@ -44,6 +49,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E3E4B912DF861C200E866EB /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+		0E3E4B932DF861CC00E866EB /* SelectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionScreen.swift; sourceTree = "<group>"; };
+		0E3E4B952DF861D200E866EB /* newscreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = newscreen.swift; sourceTree = "<group>"; };
+		0E3E4B972DF861D800E866EB /* polygonViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = polygonViewer.swift; sourceTree = "<group>"; };
+		0E3E4B9B2DF861E300E866EB /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
+		0E3E4B9D2DF861E800E866EB /* ElevationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevationManager.swift; sourceTree = "<group>"; };
+		0E3E4BA92DF867C800E866EB /* LocationViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewer.swift; sourceTree = "<group>"; };
+		0E3E4BAF2DF8683000E866EB /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
 		EC200E792A77990A00BB8E5B /* DetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsView.swift; sourceTree = "<group>"; };
 		EC52966F2A67D993000E03EB /* Authorization(View).swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Authorization(View).swift"; sourceTree = "<group>"; };
 		EC5296712A67DC35000E03EB /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
@@ -60,7 +73,6 @@
 		ECDF34032A53E5E600545CEE /* MapsProjectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITests.swift; sourceTree = "<group>"; };
 		ECDF34052A53E5E600545CEE /* MapsProjectUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapsProjectUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		ECDF34122A53E6B000545CEE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ECEA74FB2A66837A000CF4E4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		ECEA74FD2A66839F000CF4E4 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -70,8 +82,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ECEA74F82A66819F000CF4E4 /* FirebaseAuth in Frameworks */,
-				ECEA74FA2A66819F000CF4E4 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,7 +125,14 @@
 		ECDF33E52A53E5E400545CEE /* MapsProject */ = {
 			isa = PBXGroup;
 			children = (
-				ECEA74F42A668028000CF4E4 /* GoogleService-Info.plist */,
+				0E3E4BAF2DF8683000E866EB /* DataModels.swift */,
+				0E3E4BA92DF867C800E866EB /* LocationViewer.swift */,
+				0E3E4B9D2DF861E800E866EB /* ElevationManager.swift */,
+				0E3E4B9B2DF861E300E866EB /* WeatherManager.swift */,
+				0E3E4B972DF861D800E866EB /* polygonViewer.swift */,
+				0E3E4B952DF861D200E866EB /* newscreen.swift */,
+				0E3E4B932DF861CC00E866EB /* SelectionScreen.swift */,
+				0E3E4B912DF861C200E866EB /* AnalyticsView.swift */,
 				EC5296712A67DC35000E03EB /* String.swift */,
 				ECDF34122A53E6B000545CEE /* Info.plist */,
 				ECDF33E62A53E5E400545CEE /* MapsProjectApp.swift */,
@@ -174,8 +191,6 @@
 			);
 			name = MapsProject;
 			packageProductDependencies = (
-				ECEA74F72A66819F000CF4E4 /* FirebaseAuth */,
-				ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */,
 			);
 			productName = MapsProject;
 			productReference = ECDF33E32A53E5E400545CEE /* MapsProject.app */;
@@ -225,7 +240,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					ECDF33E22A53E5E400545CEE = {
 						CreatedOnToolsVersion = 15.0;
@@ -250,7 +265,6 @@
 			);
 			mainGroup = ECDF33DA2A53E5E400545CEE;
 			packageReferences = (
-				ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = ECDF33E42A53E5E400545CEE /* Products */;
 			projectDirPath = "";
@@ -270,7 +284,6 @@
 			files = (
 				ECDF33EE2A53E5E600545CEE /* Preview Assets.xcassets in Resources */,
 				ECDF33EB2A53E5E600545CEE /* Assets.xcassets in Resources */,
-				ECEA74F52A668028000CF4E4 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,14 +308,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0E3E4B962DF861D200E866EB /* newscreen.swift in Sources */,
 				ECDF33E92A53E5E400545CEE /* ContentView.swift in Sources */,
 				ECEA74FE2A66839F000CF4E4 /* RegisterView.swift in Sources */,
+				0E3E4B9E2DF861E800E866EB /* ElevationManager.swift in Sources */,
+				0E3E4B982DF861D800E866EB /* polygonViewer.swift in Sources */,
 				ECDF33F02A53E5E600545CEE /* Item.swift in Sources */,
+				0E3E4B922DF861C200E866EB /* AnalyticsView.swift in Sources */,
 				EC8770272A7BCF9B0030DD3A /* SymbolView.swift in Sources */,
+				0E3E4BB02DF8683300E866EB /* DataModels.swift in Sources */,
 				EC5296702A67D993000E03EB /* Authorization(View).swift in Sources */,
 				EC5296722A67DC35000E03EB /* String.swift in Sources */,
+				0E3E4BAA2DF867C800E866EB /* LocationViewer.swift in Sources */,
 				EC200E7A2A77990A00BB8E5B /* DetailsView.swift in Sources */,
+				0E3E4B942DF861CC00E866EB /* SelectionScreen.swift in Sources */,
 				ECEA74FC2A66837A000CF4E4 /* LoginView.swift in Sources */,
+				0E3E4B9C2DF861E300E866EB /* WeatherManager.swift in Sources */,
 				ECDF33E72A53E5E400545CEE /* MapsProjectApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,6 +396,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -398,6 +420,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -438,6 +461,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -454,6 +478,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -462,23 +487,27 @@
 		ECDF340A2A53E5E600545CEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MapsProject/Preview Content\"";
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MapsProject/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MapKit;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App needs location";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "app needs location";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs location...";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -487,8 +516,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eyupberkegulbetekin.MapsProject;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -500,23 +529,27 @@
 		ECDF340B2A53E5E600545CEE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MapsProject/Preview Content\"";
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MapsProject/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MapKit;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "App needs location";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "app needs location";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "This app needs location...";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -525,8 +558,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eyupberkegulbetekin.MapsProject;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -538,11 +571,9 @@
 		ECDF340D2A53E5E600545CEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -558,11 +589,9 @@
 		ECDF340E2A53E5E600545CEE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
@@ -578,10 +607,8 @@
 		ECDF34102A53E5E600545CEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eyupberkegulbetekin.MapsProjectUITests;
@@ -596,10 +623,8 @@
 		ECDF34112A53E5E600545CEE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = FY8WJ46TBQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.eyupberkegulbetekin.MapsProjectUITests;
@@ -651,30 +676,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		ECEA74F72A66819F000CF4E4 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		ECEA74F92A66819F000CF4E4 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ECEA74F62A66819F000CF4E4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ECDF33DB2A53E5E400545CEE /* Project object */;
 }

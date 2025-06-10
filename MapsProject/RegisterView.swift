@@ -6,22 +6,23 @@
 //
 
 import SwiftUI
-import FirebaseAuth
+
 struct RegisterView: View {
     @Binding var currentShowingView: String
-    @AppStorage("uid") var userid: String = ""
-    @State var email = ""
-    @State var password = ""
-    @State var errormessage :Bool = false
+    @Binding var isLoggedIn: Bool
+    @AppStorage("email") var storedEmail: String = ""
+    @AppStorage("password") var storedPassword: String = ""
+    
+    @State private var email = ""
+    @State private var password = ""
+    @State private var errormessage :Bool = false
+
     private func isValidPassword(_ password: String) -> Bool {
-            // minimum 6 characters long
-            // 1 uppercase character
-            // 1 special char
-            
-            let passwordRegex = NSPredicate(format: "SELF MATCHES %@", "^(?=.*[a-z]).{6,}$")
-            
-            return passwordRegex.evaluate(with: password)
-        }
+        // minimum 6 characters long
+        let passwordRegex = NSPredicate(format: "SELF MATCHES %@", "^(?=.*[a-z]).{6,}$")
+        return passwordRegex.evaluate(with: password)
+    }
+
     var body: some View {
         Image(systemName: "mappin.and.ellipse")
             .resizable()
@@ -72,18 +73,12 @@ struct RegisterView: View {
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 305, height: 100)
                         .onSubmit{
-                            if password != "" {
-                                Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
-                                    if let error = error {
-                                        errormessage.toggle()
-                                    }
-                                    if let authResult = authResult{
-                                        withAnimation{
-                                            userid = authResult.user.uid
-                                        }
-                                    }
-                                    print(userid)
-                                }
+                            if password != "" && email.isValidEmail() {
+                                storedEmail = email
+                                storedPassword = password
+                                isLoggedIn = true
+                            } else {
+                                errormessage.toggle()
                             }
                         }
                     Image(systemName: "person.text.rectangle.fill")
@@ -106,16 +101,12 @@ struct RegisterView: View {
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 305, height: 100)
                         .onSubmit{
-                            Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
-                                if let error = error {
-                                    errormessage.toggle()
-                                }
-                                if let authResult = authResult{
-                                    withAnimation{
-                                        userid = authResult.user.uid
-                                    }
-                                }
-                                print(userid)
+                            if email.isValidEmail() && isValidPassword(password) {
+                                storedEmail = email
+                                storedPassword = password
+                                isLoggedIn = true
+                            } else {
+                                errormessage.toggle()
                             }
                         }
                     Image(systemName: "lock.fill")
@@ -150,16 +141,12 @@ struct RegisterView: View {
         }
         .padding(.bottom,10)
         Button(action:{
-            Auth.auth().createUser(withEmail: email, password: password){ authResult , error in
-                if let error = error {
-                    errormessage.toggle()
-                }
-                if let authResult = authResult{
-                    withAnimation{
-                        userid = authResult.user.uid
-                    }
-                }
-                print(userid)
+            if email.isValidEmail() && isValidPassword(password) {
+                storedEmail = email
+                storedPassword = password
+                isLoggedIn = true
+            } else {
+                errormessage.toggle()
             }
             
         },label:{
@@ -196,4 +183,3 @@ struct ErrorView2 : View{
     }
     
 }
-

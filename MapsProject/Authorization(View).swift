@@ -9,20 +9,17 @@ import SwiftUI
 
 struct Authorization_View_: View {
     @State private var currentViewShowing: String = "login"
-    @AppStorage("uid") var userid: String = ""
+    @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
+
     var body: some View {
-        if userid == ""{
-            
-            if(currentViewShowing == "login") {
-                LoginView(currentShowingView: $currentViewShowing)
-                
+        if !isLoggedIn {
+            if currentViewShowing == "login" {
+                LoginView(currentShowingView: $currentViewShowing, isLoggedIn: $isLoggedIn)
             } else {
-                RegisterView(currentShowingView: $currentViewShowing)
-                
+                RegisterView(currentShowingView: $currentViewShowing, isLoggedIn: $isLoggedIn)
             }
-        }else{
+        } else {
             ContentView()
-        
         }
     }
 }
